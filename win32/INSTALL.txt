@@ -1,0 +1,39 @@
+libaff4 2.0.1
+
+Installation Instructions for Visual Studio 2015+.
+
+Requirements:
+-------------
+
+C++11 compiler (gcc/clang/mscp++)
+zlib
+snappy
+libraptor2
+liblz4
+cppunit (tests only)
+openssl (tests/examples only)
+doxygen (documentation).
+
+Notes:
+------
+
+zlib 1.2.11 is included in this source bundle.
+snappy 1.1.8 is included in this source bundle.
+raptor2 2.0.15 is included in this source bundle.
+
+lz4, openssl imported via NuGet.
+
+Building Dependencies:
+----------------------
+
+As all dependencies are included in source form with applicable
+configurations ready-made, there should be no need to manually rebuild
+any dependencies.
+
+Building:
+---------
+
+Open libaff4.sln in Visual Studio 2015, and select "Resbuild Solution" to 
+build libaff4.dll and all required dependencies.
+
+Alternatively (from the VS2015 x64 Native Tools Command Prompt) run build.cmd

@@ -1,0 +1,14 @@
+# libaff4 pkg-config source file
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/aff4
+
+Name: libaff4
+Description: libaff4 is a library for reading AFF4 files.
+Version: @VERSION@
+Conflicts:
+Requires: zlib, raptor2, liblz4
+Libs: -L${libdir} -laff4 @LIBS@
+Cflags: -I${includedir} 

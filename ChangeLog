@@ -1,0 +1,12 @@
+-- v2.0.2
+
++ Update zip header handling.
+
+-- v2.0.1
+
++ Update Visual Studio 2015 compiler options for release.
++ Update AFF4 container getResource() method to improve performance.
+
+-- v2.0.0 
+
++ Initial release

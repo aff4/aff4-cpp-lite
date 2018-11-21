@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3F088AF6-8BA8-4266-AF48-A5E64BE6942D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libaff4</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBAFF4_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>./;../;src/;$(MSBuildProjectDirectory)\..\..\src\;$(MSBuildProjectDirectory)\..\..\src\codec;$(MSBuildProjectDirectory)\..\..\src\rdf;$(MSBuildProjectDirectory)\..\..\src\container;$(MSBuildProjectDirectory)\..\..\src\image;$(MSBuildProjectDirectory)\..\..\src\map;$(MSBuildProjectDirectory)\..\..\src\stream\struct;$(MSBuildProjectDirectory)\..\..\src\stream;$(MSBuildProjectDirectory)\..\..\src\resolver;$(MSBuildProjectDirectory)\..\..\src\resource;$(MSBuildProjectDirectory)\..\..\src\utils;$(MSBuildProjectDirectory)\..\..\src\zip;$(MSBuildProjectDirectory)\..\zlib\src;$(MSBuildProjectDirectory)\..\snappy\src;$(MSBuildProjectDirectory)\..\raptor2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>snappy.lib;zlib1.lib;raptor2.lib;Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;LIBAFF4_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>./;../;src/;$(MSBuildProjectDirectory)\..\..\src\;$(MSBuildProjectDirectory)\..\..\src\codec;$(MSBuildProjectDirectory)\..\..\src\rdf;$(MSBuildProjectDirectory)\..\..\src\container;$(MSBuildProjectDirectory)\..\..\src\image;$(MSBuildProjectDirectory)\..\..\src\map;$(MSBuildProjectDirectory)\..\..\src\stream\struct;$(MSBuildProjectDirectory)\..\..\src\stream;$(MSBuildProjectDirectory)\..\..\src\resolver;$(MSBuildProjectDirectory)\..\..\src\resource;$(MSBuildProjectDirectory)\..\..\src\utils;$(MSBuildProjectDirectory)\..\..\src\zip;$(MSBuildProjectDirectory)\..\zlib\src;$(MSBuildProjectDirectory)\..\snappy\src;$(MSBuildProjectDirectory)\..\raptor2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>snappy.lib;zlib1.lib;raptor2.lib;Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBAFF4_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>./;../;src/;$(MSBuildProjectDirectory)\..\..\src\;$(MSBuildProjectDirectory)\..\..\src\codec;$(MSBuildProjectDirectory)\..\..\src\rdf;$(MSBuildProjectDirectory)\..\..\src\container;$(MSBuildProjectDirectory)\..\..\src\image;$(MSBuildProjectDirectory)\..\..\src\map;$(MSBuildProjectDirectory)\..\..\src\stream\struct;$(MSBuildProjectDirectory)\..\..\src\stream;$(MSBuildProjectDirectory)\..\..\src\resolver;$(MSBuildProjectDirectory)\..\..\src\resource;$(MSBuildProjectDirectory)\..\..\src\utils;$(MSBuildProjectDirectory)\..\..\src\zip;$(MSBuildProjectDirectory)\..\zlib\src;$(MSBuildProjectDirectory)\..\snappy\src;$(MSBuildProjectDirectory)\..\raptor2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>snappy.lib;zlib1.lib;raptor2.lib;Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;LIBAFF4_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>./;../;src/;$(MSBuildProjectDirectory)\..\..\src\;$(MSBuildProjectDirectory)\..\..\src\codec;$(MSBuildProjectDirectory)\..\..\src\rdf;$(MSBuildProjectDirectory)\..\..\src\container;$(MSBuildProjectDirectory)\..\..\src\image;$(MSBuildProjectDirectory)\..\..\src\map;$(MSBuildProjectDirectory)\..\..\src\stream\struct;$(MSBuildProjectDirectory)\..\..\src\stream;$(MSBuildProjectDirectory)\..\..\src\resolver;$(MSBuildProjectDirectory)\..\..\src\resource;$(MSBuildProjectDirectory)\..\..\src\utils;$(MSBuildProjectDirectory)\..\..\src\zip;$(MSBuildProjectDirectory)\..\zlib\src;$(MSBuildProjectDirectory)\..\snappy\src;$(MSBuildProjectDirectory)\..\raptor2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>snappy.lib;zlib1.lib;raptor2.lib;Shlwapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\aff4-c.h" />
+    <ClInclude Include="..\..\src\aff4.h" />
+    <ClInclude Include="..\..\src\AFF4Containers.h" />
+    <ClInclude Include="..\..\src\AFF4Defaults.h" />
+    <ClInclude Include="..\..\src\AFF4Lexicon.h" />
+    <ClInclude Include="..\..\src\codec\CompressionCodec.h" />
+    <ClInclude Include="..\..\src\codec\DeflateCompression.h" />
+    <ClInclude Include="..\..\src\codec\LZ4Compression.h" />
+    <ClInclude Include="..\..\src\codec\NullCompression.h" />
+    <ClInclude Include="..\..\src\codec\SnappyCompression.h" />
+    <ClInclude Include="..\..\src\container\AFF4ZipContainer.h" />
+    <ClInclude Include="..\..\src\IAFF4Container.h" />
+    <ClInclude Include="..\..\src\IAFF4Image.h" />
+    <ClInclude Include="..\..\src\IAFF4Map.h" />
+    <ClInclude Include="..\..\src\IAFF4Resolver.h" />
+    <ClInclude Include="..\..\src\IAFF4Resource.h" />
+    <ClInclude Include="..\..\src\IAFF4Stream.h" />
+    <ClInclude Include="..\..\src\image\AFF4Image.h" />
+    <ClInclude Include="..\..\src\map\AFF4Map.h" />
+    <ClInclude Include="..\..\src\RDFValue.h" />
+    <ClInclude Include="..\..\src\rdf\Model.h" />
+    <ClInclude Include="..\..\src\resolver\LightResolver.h" />
+    <ClInclude Include="..\..\src\resource\AFF4Resource.h" />
+    <ClInclude Include="..\..\src\stream\ImageStream.h" />
+    <ClInclude Include="..\..\src\stream\ImageStreamFactory.h" />
+    <ClInclude Include="..\..\src\stream\MapStream.h" />
+    <ClInclude Include="..\..\src\stream\RepeatedImageStream.h" />
+    <ClInclude Include="..\..\src\stream\struct\BevvyIndex.h" />
+    <ClInclude Include="..\..\src\stream\struct\BevvyIndexLoader.h" />
+    <ClInclude Include="..\..\src\stream\struct\ChunkLoader.h" />
+    <ClInclude Include="..\..\src\stream\struct\ImageStreamPoint.h" />
+    <ClInclude Include="..\..\src\stream\struct\MapEntryPoint.h" />
+    <ClInclude Include="..\..\src\stream\SymbolicImageStream.h" />
+    <ClInclude Include="..\..\src\utils\Cache.h" />
+    <ClInclude Include="..\..\src\utils\FileUtil.h" />
+    <ClInclude Include="..\..\src\utils\PortableEndian.h" />
+    <ClInclude Include="..\..\src\utils\StringUtil.h" />
+    <ClInclude Include="..\..\src\zip\Zip.h" />
+    <ClInclude Include="..\..\src\zip\ZipStream.h" />
+    <ClInclude Include="aff4config.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src/stdafx.h" />
+    <ClInclude Include="src/targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\aff4-c.cc" />
+    <ClCompile Include="..\..\src\aff4.cc" />
+    <ClCompile Include="..\..\src\AFF4Containers.cc" />
+    <ClCompile Include="..\..\src\AFF4Lexicon.cc" />
+    <ClCompile Include="..\..\src\codec\CompressionCodec.cc" />
+    <ClCompile Include="..\..\src\codec\DeflateCompression.cc" />
+    <ClCompile Include="..\..\src\codec\LZ4Compression.cc" />
+    <ClCompile Include="..\..\src\codec\NullCompression.cc" />
+    <ClCompile Include="..\..\src\codec\SnappyCompression.cc" />
+    <ClCompile Include="..\..\src\container\AFF4ZipContainer.cc" />
+    <ClCompile Include="..\..\src\image\AFF4Image.cc" />
+    <ClCompile Include="..\..\src\map\AFF4Map.cc" />
+    <ClCompile Include="..\..\src\RDFValue.cc" />
+    <ClCompile Include="..\..\src\rdf\Model.cc" />
+    <ClCompile Include="..\..\src\resolver\LightResolver.cc" />
+    <ClCompile Include="..\..\src\resource\AFF4Resource.cc" />
+    <ClCompile Include="..\..\src\stream\ImageStream.cc" />
+    <ClCompile Include="..\..\src\stream\ImageStreamFactory.cc" />
+    <ClCompile Include="..\..\src\stream\MapStream.cc" />
+    <ClCompile Include="..\..\src\stream\RepeatedImageStream.cc" />
+    <ClCompile Include="..\..\src\stream\struct\BevvyIndex.cc" />
+    <ClCompile Include="..\..\src\stream\struct\BevvyIndexLoader.cc" />
+    <ClCompile Include="..\..\src\stream\struct\ChunkLoader.cc" />
+    <ClCompile Include="..\..\src\stream\SymbolicImageStream.cc" />
+    <ClCompile Include="..\..\src\utils\StringUtil.cc" />
+    <ClCompile Include="..\..\src\zip\Zip.cc" />
+    <ClCompile Include="..\..\src\zip\ZipStream.cc" />
+    <ClCompile Include="src/dllmain.cc" />
+    <ClCompile Include="src/stdafx.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libaff4.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\INSTALL.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\lz4.1.3.1.2\build\native\lz4.targets" Condition="Exists('..\packages\lz4.1.3.1.2\build\native\lz4.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\lz4.1.3.1.2\build\native\lz4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\lz4.1.3.1.2\build\native\lz4.targets'))" />
+  </Target>
+</Project>

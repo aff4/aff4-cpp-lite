@@ -1,0 +1,47 @@
+libaff4 2.0.1
+
+Requirements:
+-------------
+
+C++11 compiler (gcc/clang/Visual Studio 2015+)
+zlib
+snappy
+libraptor2
+liblz4
+cppunit (tests only)
+openssl (tests / examples only)
+doxygen (documentation).
+
+General Installation (*nix):
+----------------------------
+
+With all dependencies installed, typically, a user can:
+$ ./configure
+$ make
+# make install
+
+And libaff4 will be installed into /usr/local/
+
+To override installation location, use the --prefix option, and compiler
+selection may be made using environment variables as passed to ./configure.
+
+General Installation (Windows):
+-------------------------------
+
+Solution files for Visual Studio 2015 are located in /win32.
+
+See /win32/INSTALL.txt for full details if needing to rebuild dependencies.
+
+
+General Installation (macOS):
+-------------------------------
+
+Xcode/Clang is required for build/installation.
+
+With all dependencies installed, typically, a user can:
+$ ./configure CC=clang CXX=clang++ CXXFLAGS="-std=c++11 -stdlib=libc++ -O2 -g0" LDFLAGS="-stdlib=libc++ -L/opt/local/lib"
+$ make
+# make install
+
+Notes: The additional flags are required to assist ./configure in finding
+snappy, and ensuring the build utilises clang as the compiler.

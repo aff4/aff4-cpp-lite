@@ -1,0 +1,41 @@
+AFF4 CPP v2.0
+-------------
+
+Copyright Schatz Forensic Pty Ltd, 2017
+
+Released under the LGPL v3.0+
+
+Windows Binary Package
+----------------------
+
+This packages contains libaff4.dll and dependencies built using Visual Studio 2015.
+
+The libaff4.dll also requires MSVCP140.dll and MSVCRUNTIME140.dll. (MS VC++ 2015 Runtime).
+
+Both *.dll and *.lib are provided for libaff4 and its dependencies.
+
+All builds assume Multi-threading has been enabled.
+
+Contents
+--------
+
+/include - All C/C++ header files required for the Public API.
+/examples - Basic Examples of the C++ API. (examples require OpenSSL to build/run).
+/Win32/Debug - 32bit Debug builds.
+/Win32/Release - 32bit Release builds.
+/x64/Debug - 64bit Debug builds.
+/x64/Release - 64bit Release builds.
+
+C++ API
+--------
+
+The default API for libaff4 is C++ based. The user just needs to include "aff4.h" to 
+bring in all required public API headers.
+
+C API
+-------
+
+A basic C API is provided to allows users to open/read/close an AFF4 Container.
+This API only works with the first image within the AFF4 Container.
+
+The user just needs to include "aff4-c.h" to bring in all required public API headers.

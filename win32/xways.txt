@@ -1,0 +1,15 @@
+X-Ways AFF4 Plugin
+-------------------
+
+Copyright Schatz Forensic Pty Ltd, 2017
+
+Released under the LGPL v3.0+
+
+Plugin Binary Package
+----------------------
+
+This packages contains imageAFF4.dll, libaff4.dll and dependencies built using Visual Studio 2015.
+
+The libaff4.dll also requires MSVCP140.dll and MSVCRUNTIME140.dll. (MS VC++ 2015 Runtime).
+
+Install as per X-Way Forensic documentation.
