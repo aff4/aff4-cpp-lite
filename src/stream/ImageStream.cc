@@ -61,8 +61,14 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 	if (values.size() > 0) {
 		if (values[0].getXSDType() == aff4::rdf::XSDType::Long) {
 			chunkSize = (uint32_t)values[0].getLong();
-		} else {
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::Int) {
 			chunkSize = values[0].getInteger();
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::String) {
+			try {
+				chunkSize = (uint32_t)std::stoi(values[0].getValue());
+			} catch (...){
+				// ignore
+			}
 		}
 	}
 #if DEBUG
@@ -73,8 +79,14 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 	if (values.size() > 0) {
 		if (values[0].getXSDType() == aff4::rdf::XSDType::Long) {
 			chunksInSegment = (uint32_t)values[0].getLong();
-		} else {
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::Int) {
 			chunksInSegment = values[0].getInteger();
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::String) {
+			try {
+				chunksInSegment = (uint32_t)std::stoi(values[0].getValue());
+			} catch (...){
+				// ignore
+			}
 		}
 	}
 #if DEBUG
@@ -90,6 +102,9 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 			aff4::Lexicon codecResource = values[0].getType();
 			codec = aff4::codec::getCodec(codecResource, chunkSize);
 		}
+	} else {
+		// Compression not defined, set as stored.
+		codec = aff4::codec::getCodec(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_STORED, chunkSize);
 	}
 
 	if (codec == nullptr) {

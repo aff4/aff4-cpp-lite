@@ -33,6 +33,7 @@ namespace rdf {
 static const std::map<std::string, XSDType> xsdMappings = { //
 		{ (AFF4_XSD_PREFIX "string"), XSDType::String }, //
 				{ (AFF4_XSD_PREFIX "int"), XSDType::Int }, //
+				{ (AFF4_XSD_PREFIX "integer"), XSDType::Int }, //
 				{ (AFF4_XSD_PREFIX "long"), XSDType::Long }, //
 				{ (AFF4_XSD_PREFIX "dateTime"), XSDType::XSDDateTime }, //
 				{ (AFF4_XSD_PREFIX "boolean"), XSDType::Boolean }, //

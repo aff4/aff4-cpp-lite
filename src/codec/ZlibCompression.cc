@@ -15,43 +15,27 @@
  along with AFF4 CPP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DeflateCompression.h"
+#include "ZlibCompression.h"
 #include "zlib.h"
 
 namespace aff4 {
 namespace codec {
 
-DeflateCompression::DeflateCompression(uint32_t chunkSize) :
-		CompressionCodec(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_DEFLATE), chunkSize) {
+ZlibCompression::ZlibCompression(uint32_t chunkSize) :
+		CompressionCodec(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB), chunkSize) {
 }
 
-DeflateCompression::~DeflateCompression() {
+ZlibCompression::~ZlibCompression() {
 	// NOP
 }
 
-uint64_t DeflateCompression::decompress(void* source, uint64_t srcSize, void* destination, uint64_t destSize) noexcept {
+uint64_t ZlibCompression::decompress(void* source, uint64_t srcSize, void* destination, uint64_t destSize) noexcept {
 	if (source == nullptr || destination == nullptr) {
 		return 0;
 	}
-	// Decompress.
-	z_stream zstream;
-	::memset(&zstream, 0, sizeof(zstream));
-	zstream.next_in = (Bytef*)source;
-	zstream.avail_in = srcSize;
-	zstream.next_out = (Bytef*)destination;
-	zstream.avail_out = destSize;
-
-	if (inflateInit2(&zstream, -15) != Z_OK) {
-		return -1;
-	}
-
-	if (inflate(&zstream, Z_FINISH) != Z_STREAM_END) {
-		inflateEnd(&zstream);
-		return -1;
-	}
-
-	inflateEnd(&zstream);
-	return zstream.total_out;
+	unsigned long int destConsumed = (unsigned long int)destSize;
+	::uncompress((unsigned char*)destination, &destConsumed, (unsigned char*)source, (unsigned long int)srcSize);
+	return (uint64_t)destConsumed;
 }
 
 } /* namespace codec */

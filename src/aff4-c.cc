@@ -68,6 +68,10 @@ int AFF4_open(const char* filename) {
 	if (handles == nullptr) {
 		AFF4_init();
 	}
+	if (filename == NULL){
+		errno = ENOENT;
+		return -1;
+	}
 	std::string file(filename);
 	if (file.empty()) {
 		errno = ENOENT;
@@ -124,6 +128,29 @@ int64_t AFF4_object_size(int handle) {
 	if (it != handles->end()) {
 		container_t con = it->second;
 		return std::get<2>(con)->size();
+	}
+	errno = EBADF;
+	return -1;
+}
+
+int64_t AFF4_object_blocksize(int handle) {
+	if (handles == nullptr) {
+		AFF4_init();
+	}
+	auto it = handles->find(handle);
+	if (it != handles->end()) {
+		container_t con = it->second;
+		std::vector<aff4::rdf::RDFValue> properties = std::get<2>(con)->getProperty(aff4::Lexicon::AFF4_BLOCKSIZE);
+		if (!properties.empty()) {
+			aff4::rdf::RDFValue v = properties[0];
+			if (v.getXSDType() == aff4::rdf::XSDType::Int) {
+				return v.getInteger();
+			} else if (v.getXSDType() == aff4::rdf::XSDType::Long) {
+				return v.getLong();
+			}
+		}
+		errno = ENODATA;
+		return -1;
 	}
 	errno = EBADF;
 	return -1;

@@ -1,3 +1,7 @@
+-- v2.0.3
+
++ Update zip header handling. Add compatibility for c-libaff4 implementation bugs and quirks.
+
 -- v2.0.2
 
 + Update zip header handling.

@@ -42,12 +42,12 @@ namespace aff4 {
 namespace zip {
 
 ZipEntry::ZipEntry(const std::string& segmentName, uint64_t headerOffset, uint64_t offset, uint64_t length,
-		uint64_t uncompressedLength, int compressionMethod) :
-		segmentName(segmentName), headerOffset(headerOffset), offset(offset), length(length), uncompressedLength(
-				uncompressedLength), compressionMethod(compressionMethod) {
+		uint64_t compressedLength, int compressionMethod) :
+		segmentName(segmentName), headerOffset(headerOffset), offset(offset), length(length), compressedLength(
+				compressedLength), compressionMethod(compressionMethod) {
 #if DEBUG
 	fprintf( aff4::getDebugOutput(), "%s[%d] : ZipEntry : %s %" PRIu64 " : %" PRIu64 "\n", __FILE__, __LINE__, segmentName.c_str(),
-			offset, uncompressedLength);
+			offset, compressedLength);
 #endif
 }
 
@@ -162,7 +162,7 @@ std::shared_ptr<IAFF4Stream> Zip::getStream(const std::string& segmentName) noex
 					entry->getSegmentName(), entry, this);
 #if DEBUG
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Zip Open Segment: %s Found: %" PRIu64 " : %" PRIu64 "\n", __FILE__, __LINE__,
-					segmentName.c_str(), entry->getHeaderOffset(), entry->getUncompressedLength());
+					segmentName.c_str(), entry->getHeaderOffset(), entry->getCompressedLength());
 #endif
 			return stream;
 		}
@@ -296,7 +296,7 @@ void Zip::parseCD() noexcept {
 		std::string segmentName(segmentNameBuffer.get(), (size_t) le16toh(entry.file_name_length));
 		fieldOffset += le16toh(entry.file_name_length);
 
-		if (zipEntry.headerOffset == 0xffffffff) {
+		if ((zipEntry.headerOffset == 0xffffffff || zipEntry.headerOffset == (uint64_t)-1)) {
 			// Zip64 entry...
 			structs::ZipExtraFieldHeader extraHeader;
 			uint16_t hOffset = 0;
@@ -307,17 +307,21 @@ void Zip::parseCD() noexcept {
 				}
 				if (le16toh(extraHeader.header_id) == 1) {
 					uint16_t dataSize = le16toh(extraHeader.data_size);
-					if (zipEntry.size == 0xffffffff && dataSize >= 8) {
-						fileRead(&zipEntry.size, 8, fieldOffset + hOffset + sizeof(extraHeader));
+					uint64_t fOffset = 0;
+					if ((zipEntry.size == 0xffffffff || zipEntry.size == (uint64_t)-1) && dataSize >= 8) {
+						fileRead(&zipEntry.size, 8, fieldOffset + hOffset + sizeof(extraHeader) + fOffset);
 						zipEntry.size = le64toh(zipEntry.size);
+						fOffset += 8;
 					}
-					if (zipEntry.csize == 0xffffffff && dataSize >= 8) {
-						fileRead(&zipEntry.csize, 8, fieldOffset + hOffset + sizeof(extraHeader));
+					if ((zipEntry.csize == 0xffffffff || zipEntry.csize == (uint64_t)-1) && dataSize >= 8) {
+						fileRead(&zipEntry.csize, 8, fieldOffset + hOffset + sizeof(extraHeader) + fOffset);
 						zipEntry.csize = le64toh(zipEntry.csize);
+						fOffset += 8;
 					}
-					if (zipEntry.headerOffset == 0xffffffff && dataSize >= 8) {
-						fileRead(&zipEntry.headerOffset, 8, fieldOffset + hOffset + sizeof(extraHeader));
+					if ((zipEntry.headerOffset == 0xffffffff || zipEntry.headerOffset == (uint64_t)-1) && dataSize >= 8) {
+						fileRead(&zipEntry.headerOffset, 8, fieldOffset + hOffset + sizeof(extraHeader) + fOffset);
 						zipEntry.headerOffset = le64toh(zipEntry.headerOffset);
+						fOffset += 8;
 					}
 				}
 				hOffset += le16toh(extraHeader.data_size) + sizeof(extraHeader);

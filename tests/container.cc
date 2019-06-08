@@ -80,6 +80,8 @@ const std::string mapSHA1 = "5204743948cafe73b9c3d75052e52ead3d319cc7";
 const std::string streamSHA1 = "ba85b601a65aef8adf7b0e0fb3144b217d4cd27c";
 const std::string streamIndexSHA1 = "8bb7f7820cffbb3b14007e36d2b0ad2459c4d9fa";
 
+const std::string filename1 = UNITTEST_BASE_PATH "tests/resources/blank.aff4";
+const std::string filename2 = UNITTEST_BASE_PATH "tests/resources/blank5.aff4";
 
 TEST_METHOD(testZipLinear) {
 	std::string filename(UNITTEST_BASE_PATH "tests/resources/Base-Linear.aff4");
@@ -517,6 +519,61 @@ TEST_METHOD(testContainerImageStreamContents) {
 	testStreamContents(con->getSegment(res), streamSHA1);
 }
 
+TEST_METHOD(testBlank) {
+	std::string filename(filename1);
+
+	std::shared_ptr<aff4::IAFF4Container> container = aff4::container::openAFF4Container(filename);
+	CPPUNIT_ASSERT(container != nullptr);
+	CPPUNIT_ASSERT_EQUAL(std::string("aff4://b437c880-9f5a-420e-8553-8878f5518441"), container->getResourceID());
+
+	std::vector<aff4::rdf::RDFValue> tool = container->getProperty(aff4::Lexicon::AFF4_TOOL);
+	CPPUNIT_ASSERT_EQUAL(1, (int )tool.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("libaff4 1.0"), tool[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> major = container->getProperty(aff4::Lexicon::AFF4_MAJOR_VERSION);
+	CPPUNIT_ASSERT_EQUAL(1, (int )major.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("1"), major[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> minor = container->getProperty(aff4::Lexicon::AFF4_MINOR_VERSION);
+	CPPUNIT_ASSERT_EQUAL(1, (int )minor.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("0"), minor[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> rdfType = container->getProperty(aff4::Lexicon::AFF4_TYPE);
+	CPPUNIT_ASSERT_EQUAL(1, (int )rdfType.size());
+	CPPUNIT_ASSERT(aff4::Lexicon::AFF4_ZIP_TYPE == rdfType[0].getType());
+
+	std::vector<aff4::rdf::RDFValue> time = container->getProperty(aff4::Lexicon::AFF4_CREATION_TIME);
+	CPPUNIT_ASSERT_EQUAL(0, (int )time.size());
+	container->close();
+}
+
+TEST_METHOD(testBlank5) {
+	std::string filename(filename2);
+
+	std::shared_ptr<aff4::IAFF4Container> container = aff4::container::openAFF4Container(filename);
+	CPPUNIT_ASSERT(container != nullptr);
+	CPPUNIT_ASSERT_EQUAL(std::string("aff4://37de92d3-24bb-4e5f-8279-a2b3992eba52"), container->getResourceID());
+
+	std::vector<aff4::rdf::RDFValue> tool = container->getProperty(aff4::Lexicon::AFF4_TOOL);
+	CPPUNIT_ASSERT_EQUAL(1, (int )tool.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("libaff4 1.0"), tool[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> major = container->getProperty(aff4::Lexicon::AFF4_MAJOR_VERSION);
+	CPPUNIT_ASSERT_EQUAL(1, (int )major.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("1"), major[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> minor = container->getProperty(aff4::Lexicon::AFF4_MINOR_VERSION);
+	CPPUNIT_ASSERT_EQUAL(1, (int )minor.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("0"), minor[0].toString());
+
+	std::vector<aff4::rdf::RDFValue> rdfType = container->getProperty(aff4::Lexicon::AFF4_TYPE);
+	CPPUNIT_ASSERT_EQUAL(1, (int )rdfType.size());
+	CPPUNIT_ASSERT(aff4::Lexicon::AFF4_ZIP_TYPE == rdfType[0].getType());
+
+	std::vector<aff4::rdf::RDFValue> time = container->getProperty(aff4::Lexicon::AFF4_CREATION_TIME);
+	CPPUNIT_ASSERT_EQUAL(0, (int )time.size());
+	container->close();
+}
 
 
 #if defined _WIN32 && defined _MSC_VER 

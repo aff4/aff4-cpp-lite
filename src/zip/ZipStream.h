@@ -85,6 +85,16 @@ private:
 	 * Zip file file.
 	 */
 	aff4::zip::Zip* container;
+
+	/**
+	 * Read/materialise from a compressed stream.
+	 * @param buf A pointer to the buffer to read to.
+	 * @param count The number of bytes to read
+	 * @param offset The offset from the start of the stream.
+	 * @return The number of bytes read. (0 indicates nothing read, or -1 indicates error).
+	 */
+	int64_t readCompressed(void *buf, uint64_t count, uint64_t offset) noexcept;
+
 };
 
 } /* namespace zip */

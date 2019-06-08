@@ -49,6 +49,7 @@ libaff4_la_SOURCES = \
 	codec/CompressionCodec.cc codec/CompressionCodec.h \
 	codec/NullCompression.cc codec/NullCompression.h \
 	codec/DeflateCompression.cc codec/DeflateCompression.h \
+	codec/ZlibCompression.cc codec/ZlibCompression.h \
 	codec/LZ4Compression.cc codec/LZ4Compression.h \
 	codec/SnappyCompression.cc codec/SnappyCompression.h \
 	resolver/LightResolver.cc resolver/LightResolver.h 

@@ -47,6 +47,9 @@ CPPUNIT_TEST_SUITE(container);
 	CPPUNIT_TEST(testContainerMapContents);
 	CPPUNIT_TEST(testContainerImageStreamContents);
 
+	CPPUNIT_TEST(testBlank);
+	CPPUNIT_TEST(testBlank5);
+
 	CPPUNIT_TEST_SUITE_END()
 	;
 
@@ -69,6 +72,9 @@ private:
 	void testContainerMissingResource();
 	void testContainerMapContents();
 	void testContainerImageStreamContents();
+
+	void testBlank();
+	void testBlank5();
 };
 
 #endif /* TEST_CONTAINER_H */

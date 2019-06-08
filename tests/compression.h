@@ -29,6 +29,7 @@
 #include "../src/codec/SnappyCompression.h"
 #include "../src/codec/DeflateCompression.h"
 #include "../src/codec/LZ4Compression.h"
+#include "../src/codec/ZlibCompression.h"
 
 #include "zlib.h"
 #include "snappy.h"
@@ -52,6 +53,8 @@ CPPUNIT_TEST_SUITE(compression);
 	CPPUNIT_TEST(testLZ4Resource);
 	CPPUNIT_TEST(testDeflate);
 	CPPUNIT_TEST(testDeflateResource);
+	CPPUNIT_TEST(testZlib);
+	CPPUNIT_TEST(testZlibResource);
 	CPPUNIT_TEST(testNull);
 	CPPUNIT_TEST(testNullResource);
 	CPPUNIT_TEST(testBadValue);
@@ -66,6 +69,7 @@ CPPUNIT_TEST_SUITE(compression);
 	CPPUNIT_TEST(testSnappyCompression);
 	CPPUNIT_TEST(testDeflateCompression);
 	CPPUNIT_TEST(testLZ4Compression);
+	CPPUNIT_TEST(testZlibCompression);
 
 	CPPUNIT_TEST_SUITE_END()
 	;
@@ -86,6 +90,8 @@ private:
 	void testLZ4Resource();
 	void testDeflate();
 	void testDeflateResource();
+	void testZlib();
+	void testZlibResource();
 	void testNull();
 	void testNullResource();
 	void testBadValue();
@@ -100,6 +106,7 @@ private:
 	void testSnappyCompression();
 	void testDeflateCompression();
 	void testLZ4Compression();
+	void testZlibCompression();
 
 };
 

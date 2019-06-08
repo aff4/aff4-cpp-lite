@@ -35,6 +35,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #include <locale>
 #include <codecvt>
+#include <shlwapi.h>
 
 #define CPPUNIT_ASSERT Assert::IsTrue
 #define CPPUNIT_ASSERT_EQUAL Assert::AreEqual
@@ -626,6 +627,13 @@ std::string ws2s(const std::wstring& wstr) {
 TEST_METHOD(testUnicodeFilename) {
 	// UTF-8 encoded string.
 	std::string file("D:\\сховище\\1GBFAT16Default.aff4");
+#ifdef _WIN32
+	if (PathFileExistsW(s2ws(file).c_str()) == FALSE) {
+		Assert::IsTrue(true);
+		return;
+	}
+#endif
+
 	AFF4_init();
 	int handle = AFF4_open(file.c_str());
 	CPPUNIT_ASSERT_EQUAL(1, handle);
@@ -645,6 +653,12 @@ TEST_METHOD(testUnicodeFilename) {
 TEST_METHOD(testUnicodeFilename2) {
 	// UTF-8 encoded string.
 	std::string file("D:\\сховище\\справа.aff4");
+#ifdef _WIN32
+	if (PathFileExistsW(s2ws(file).c_str()) == FALSE) {
+		Assert::IsTrue(true);
+		return;
+	}
+#endif
 	AFF4_init();
 	int handle = AFF4_open(file.c_str());
 	CPPUNIT_ASSERT_EQUAL(1, handle);

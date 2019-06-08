@@ -189,6 +189,7 @@
     <ClInclude Include="..\..\src\codec\LZ4Compression.h" />
     <ClInclude Include="..\..\src\codec\NullCompression.h" />
     <ClInclude Include="..\..\src\codec\SnappyCompression.h" />
+    <ClInclude Include="..\..\src\codec\ZlibCompression.h" />
     <ClInclude Include="..\..\src\container\AFF4ZipContainer.h" />
     <ClInclude Include="..\..\src\IAFF4Container.h" />
     <ClInclude Include="..\..\src\IAFF4Image.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\..\src\codec\LZ4Compression.cc" />
     <ClCompile Include="..\..\src\codec\NullCompression.cc" />
     <ClCompile Include="..\..\src\codec\SnappyCompression.cc" />
+    <ClCompile Include="..\..\src\codec\ZlibCompression.cc" />
     <ClCompile Include="..\..\src\container\AFF4ZipContainer.cc" />
     <ClCompile Include="..\..\src\image\AFF4Image.cc" />
     <ClCompile Include="..\..\src\map\AFF4Map.cc" />

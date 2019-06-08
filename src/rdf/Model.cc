@@ -122,7 +122,12 @@ std::unique_ptr<aff4::rdf::RDFValue> Model::getValueFromRaptorTerm(aff4::Lexicon
 				case String:
 					return std::unique_ptr<RDFValue>(new RDFValue(value_string));
 				case Int:
-					return std::unique_ptr<RDFValue>(new RDFValue((int32_t)std::stoi(value_string)));
+					try {
+						return std::unique_ptr<RDFValue>(new RDFValue((int32_t)std::stoi(value_string)));
+					} catch (...){
+						// expected overflow.
+					}
+					return std::unique_ptr<RDFValue>(new RDFValue((int64_t)std::stoll(value_string)));
 				case Long:
 					// Use std::stoll() for conversion, as this should be 64bit Long on all platforms.
 					return std::unique_ptr<RDFValue>(new RDFValue((int64_t)std::stoll(value_string)));

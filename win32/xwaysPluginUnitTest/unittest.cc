@@ -22,6 +22,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #include "xwaysPlugin.h"
 #include <openssl/sha.h>
+#include <shlwapi.h>
 
 #define UNITTEST_BASE_PATH L"..\\..\\..\\"
 
@@ -313,6 +314,10 @@ namespace xwaysPluginUnitTest
 		TEST_METHOD(testMapSize)
 		{
 			std::wstring filename(L"D:\\Test2\\ToshibaUSB_PhysicalDrive3_C.aff4");
+			if (PathFileExistsW(filename.c_str()) == FALSE) {
+				Assert::IsTrue(true);
+				return;
+			}
 			ImageInfo info;
 			info.nSize = sizeof(ImageInfo);
 			info.nFlags = 0;

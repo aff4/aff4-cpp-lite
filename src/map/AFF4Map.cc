@@ -23,7 +23,7 @@ namespace map {
 AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer* parent) :
 		AFF4Resource(resource), parent(parent), length(0), unknownOverride(nullptr), mapGapStreamOverride(nullptr) {
 #if DEBUG
-	fprintf( aff4::getDebugOutput(), "%s[%d] : Create Map  %s \n", __FILE__, __LINE__, getResourceID().c_str());
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Create Map  %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 
 	std::shared_ptr<aff4::rdf::Model> model = parent->getRDFModel();
@@ -42,12 +42,18 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 	if (!values.empty()) {
 		if (values[0].getXSDType() == aff4::rdf::XSDType::Long) {
 			length = values[0].getLong();
-		} else {
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::Int) {
 			length = values[0].getInteger();
+		} else if (values[0].getXSDType() == aff4::rdf::XSDType::String) {
+			try {
+				length = (int64_t)std::stoll(values[0].getValue());
+			} catch (...){
+				// ignore
+			}
 		}
 	}
 #if DEBUG
-	fprintf( aff4::getDebugOutput(), "%s[%d] : Length  %" PRIu64 " (%" PRIx64 ")\n", __FILE__, __LINE__, length, length);
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Length  %" PRIu64 " (%" PRIx64 ")\n", __FILE__, __LINE__, length, length);
 #endif
 
 	/*
@@ -68,8 +74,58 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 		mapGapStreamOverride = aff4::stream::createZeroStream();
 	}
 #if DEBUG
-	fprintf( aff4::getDebugOutput(), "%s[%d] : mapGapDefaultStream = %s\n", __FILE__, __LINE__, mapGapStreamOverride->getResourceID().c_str());
+	fprintf(aff4::getDebugOutput(), "%s[%d] : mapGapDefaultStream = %s\n", __FILE__, __LINE__, mapGapStreamOverride->getResourceID().c_str());
 #endif
+	values = getProperty(aff4::Lexicon::AFF4_DEPENDENT_STREAM);
+	if (values.empty()) {
+		/*
+		 * No dependent streams provided. Load the idx file and extract from there.
+		 */
+
+		std::string segmentName = getResourceID() + "/idx";
+		std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
+		if (stream == nullptr) {
+			return;
+		}
+		std::unique_ptr<char[]> bufferIDX(new char[stream->size()]);
+		int64_t res = stream->read(bufferIDX.get(), stream->size(), 0);
+		stream->close();
+		if (res > 0) {
+			// convert the buffer into a string...
+			std::string idx(bufferIDX.get(), res);
+
+			std::stringstream data(idx);
+			std::string line;
+			std::vector<aff4::rdf::RDFValue> streams;
+			while (std::getline(data, line, '\n')) {
+				if (!line.empty()) {
+#if DEBUG
+					fprintf(aff4::getDebugOutput(), "%s[%d] : IDX Stream : %s\n", __FILE__, __LINE__, line.c_str());
+#endif
+					/*
+					 * Check for symbolic stream types.
+					 */
+					if (resource.compare(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_ZERO)) == 0) {
+						continue;
+					}
+					if (resource.compare(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_UNKNOWN)) == 0) {
+						continue;
+					}
+					if (resource.compare(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_UNREADABLE)) == 0) {
+						continue;
+					}
+					if (aff4::util::hasPrefix(resource, lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_SYMBOLIC_PREFIX))) {
+						continue;
+					}
+					aff4::rdf::RDFValue value(aff4::rdf::XSDType::Resource, aff4::Lexicon::AFF4_DEPENDENT_STREAM, line);
+					streams.push_back(value);
+				}
+			}
+			if (!streams.empty()) {
+				addProperty(aff4::Lexicon::AFF4_DEPENDENT_STREAM, streams);
+			}
+		}
+	}
 }
 
 AFF4Map::~AFF4Map() {

@@ -40,7 +40,7 @@ namespace container {
  * Determine if a AFF4 container based on the filename.
  *
  * @param filename The file
- * @return TRUE if the filename suggests a AFF4 container.
+ * @return TRUE if the filename suggests a AFF4 container. (UTF-8)
  */
 LIBAFF4_API bool isAFF4Container(std::string filename) noexcept;
 /**
@@ -49,7 +49,7 @@ LIBAFF4_API bool isAFF4Container(std::string filename) noexcept;
  * This implementation will use both the comment and contents of the 'container.description' file with the latter
  * overriding the first if both present.
  *
- * @param filename The file to open for the resource string.
+ * @param filename The file to open for the resource string. (UTF-8)
  * @return The found resource ID, or empty string if not found.
  */
 LIBAFF4_API std::string getResourceID(const std::string& filename) noexcept;
@@ -59,7 +59,7 @@ LIBAFF4_API std::string getResourceID(const std::string& filename) noexcept;
  * The container will NOT be supplied an external Resolver to assist in looking for elements outside of it's
  * own container.
  *
- * @param filename The file to open
+ * @param filename The file to open. (UTF-8)
  * @return A AFF4 container instance, or NULL if failed.
  */
 LIBAFF4_API std::shared_ptr<IAFF4Container> openAFF4Container(const std::string& filename) noexcept;
@@ -67,7 +67,7 @@ LIBAFF4_API std::shared_ptr<IAFF4Container> openAFF4Container(const std::string&
 /**
  * Open the given file as a AFF4 Container
  *
- * @param filename The file to open
+ * @param filename The file to open. (UTF-8)
  * @param resolver Set the container to utilise the given AFF4 object resolver to look for objects outside of it's
  *            own container.
  * @return A AFF4 container instance
@@ -76,7 +76,7 @@ LIBAFF4_API std::shared_ptr<IAFF4Container> openAFF4Container(const std::string&
 
 /**
  * Create a basic Lightweight Resolver.
- * @param path The base path.
+ * @param path The base path. (UTF-8)
  * @param scanSubFolders TRUE to scan the folder and all sub folders for images.
  * @return A lightweight resolver, or NULL if unable to construct. (eg, bad path).
  */

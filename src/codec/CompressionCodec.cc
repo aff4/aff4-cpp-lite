@@ -19,6 +19,7 @@
 #include "NullCompression.h"
 #include "SnappyCompression.h"
 #include "DeflateCompression.h"
+#include "ZlibCompression.h"
 #include "LZ4Compression.h"
 
 namespace aff4 {
@@ -40,6 +41,8 @@ std::shared_ptr<CompressionCodec> getCodec(aff4::Lexicon resource, uint32_t chun
 		return std::make_shared<DeflateCompression>(chunkSize);
 	case Lexicon::AFF4_IMAGE_COMPRESSION_STORED:
 		return std::make_shared<NullCompression>(chunkSize);
+	case Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB:
+		return std::make_shared<ZlibCompression>(chunkSize);
 	default:
 		break;
 	}

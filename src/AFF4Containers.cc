@@ -115,9 +115,8 @@ namespace aff4 {
 			 * Knowing, this allows to just read the very first entry and parse it for the container UUID.
 			 * (Much quicker than a full Zip container open/scan/etc).
 			 *
-			 * To use the slow full open zip container method define the definition as per below.
+			 * On error, we fall back to the slow method.
 			 */
-#ifndef AFF4_USE_FULL_CONTAINER_OPEN_FOR_RESOURCE
 
 			std::unique_ptr<uint8_t[]> buffer(new uint8_t[AFF4_RESOURCE_BUFFER_SIZE]);
 			/*
@@ -166,7 +165,9 @@ namespace aff4 {
 				return "";
 			}
 #endif
-
+			uint64_t segmentEntrySize = 0;
+			size_t filenameLength = 0;
+			std::string segmentName;
 			/*
 			* The buffer should now contain the first 512bytes of the container.
 			*/
@@ -182,40 +183,68 @@ namespace aff4 {
 #if DEBUG
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid PKZIP compression method : %s = %d \n", __FILE__, __LINE__, filename.c_str(), header->compression_method);
 #endif
-				return "";
+				goto slowPath;
 			}
 			if (header->file_name_length != 0x15) { // 'container.description'
 #if DEBUG
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid segment name length : %s = %d != 0x15\n", __FILE__, __LINE__, filename.c_str(), header->file_name_length);
 #endif
-				return "";
+				goto slowPath;
 			}
 			// Get the filename.
-			size_t filenameLength = le16toh(header->file_name_length);
-			std::string segmentName((char*)(buffer.get() + sizeof(aff4::zip::structs::ZipFileHeader)), filenameLength);
+			filenameLength = le16toh(header->file_name_length);
+			segmentName = std::string((char*)(buffer.get() + sizeof(aff4::zip::structs::ZipFileHeader)), filenameLength);
 			if (segmentName.compare(AFF4_FILEDESCRIPTOR) != 0) {
 #if DEBUG
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid segment name : %s = %s\n", __FILE__, __LINE__, filename.c_str(), segmentName.c_str());
 #endif
-				return "";
+				goto slowPath;
 			}
-			size_t segmentEntrySize = 0;
-			// At this point the segment name checks out, so let get the content.
-			if (header->file_size == -1) {
-				// We need to scan for the ZipDataDescriptor64 structure... this should be in the first 512 bytes that we have read.	
-				int dd64magic = 0x08074b50;
-				size_t dd64Size = sizeof(aff4::zip::structs::ZipDataDescriptor64);
-				uint8_t* offset = buffer.get();
-				aff4::zip::structs::ZipDataDescriptor64* dd64 = (aff4::zip::structs::ZipDataDescriptor64*)offset;
-				while (dd64->magic != dd64magic) {
-					offset++;
-					if (offset > (buffer.get() + AFF4_RESOURCE_BUFFER_SIZE - dd64Size)) {
-						break;
+			// At this point the segment name checks out, so lets get the content.
+			if (header->file_size == (uint32_t)-1) {
+				// Check for the extra header entries.
+				if (header->extra_field_len != 0) {
+					uint16_t hOffset = 0;
+					uint8_t* offset = (buffer.get() + sizeof(aff4::zip::structs::ZipFileHeader) + filenameLength);
+					aff4::zip::structs::ZipExtraFieldHeader* extraHeader = (aff4::zip::structs::ZipExtraFieldHeader*) offset;
+					if (le16toh(extraHeader->header_id) == 1) {
+						uint16_t dataSize = le16toh(extraHeader->data_size);
+						uint64_t exHeaderOffset = sizeof(aff4::zip::structs::ZipExtraFieldHeader);
+						if ((header->file_size == (uint32_t)-1) && (dataSize >= 8)) {
+							uint64_t* off = (uint64_t*) ((uint8_t*) extraHeader + exHeaderOffset);
+							segmentEntrySize = le64toh(*off);
+							exHeaderOffset += 8;
+							dataSize -= 8;
+						}
+						if ((header->compress_size == (uint32_t)-1) && (dataSize >= 8)) {
+							if (segmentEntrySize == 0 || segmentEntrySize == (uint64_t) -1) {
+								uint64_t* off = (uint64_t*) ((uint8_t*) extraHeader + exHeaderOffset);
+								segmentEntrySize = le64toh(*off);
+							}
+							exHeaderOffset += 8;
+							dataSize -= 8;
+						}
 					}
-					dd64 = (aff4::zip::structs::ZipDataDescriptor64*)offset;
+					hOffset += le16toh(extraHeader->data_size) + sizeof(extraHeader);
+
 				}
-				if (dd64->magic == dd64magic) {
-					segmentEntrySize = dd64->compress_size;
+				// if no extra header or it indicates zip64...
+				if(segmentEntrySize == 0 || segmentEntrySize == (uint64_t)-1){
+					// We need to scan for the ZipDataDescriptor64 structure... this should be in the first 512 bytes that we have read.
+					uint32_t dd64magic = 0x08074b50;
+					size_t dd64Size = sizeof(aff4::zip::structs::ZipDataDescriptor64);
+					uint8_t* offset = buffer.get();
+					aff4::zip::structs::ZipDataDescriptor64* dd64 = (aff4::zip::structs::ZipDataDescriptor64*)offset;
+					while (dd64->magic != dd64magic) {
+						offset++;
+						if (offset > (buffer.get() + AFF4_RESOURCE_BUFFER_SIZE - dd64Size)) {
+							break;
+						}
+						dd64 = (aff4::zip::structs::ZipDataDescriptor64*)offset;
+					}
+					if (dd64->magic == dd64magic) {
+						segmentEntrySize = dd64->compress_size;
+					}
 				}
 			} else {
 				segmentEntrySize = header->file_size;
@@ -226,13 +255,18 @@ namespace aff4 {
 #if DEBUG
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Segment appears too large for container.description? : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
-				return "";
+				goto slowPath;
 			}
+			{
 			// And get our data.
 			char* data = (char*)buffer.get() + sizeof(aff4::zip::structs::ZipFileHeader) + header->file_name_length + header->extra_field_len;
 			std::string resource(data, segmentEntrySize);
 			return resource;
-#else
+			}
+			/*
+			 * Implement a slow path to OPEN the entire file as a Zip and read via this method.
+			 */
+slowPath:
 
 			 /*
 			  * Attempt to load as Zip container. (Valid containers will have at least 2 entries).
@@ -243,7 +277,7 @@ namespace aff4 {
 				return "";
 			}
 			// Get the Zip comment.
-			std::string resource = zipFile->getZipComment();
+			std::string resourceSP = zipFile->getZipComment();
 			// And now look for the container.description file. (it's contents overrides the zip comment field).
 			std::string description(AFF4_FILEDESCRIPTOR);
 			std::shared_ptr<IAFF4Stream> stream = zipFile->getStream(description);
@@ -251,13 +285,12 @@ namespace aff4 {
 				std::unique_ptr<char[]> buffer(new char[stream->size()]);
 				int64_t res = stream->read(buffer.get(), stream->size(), 0);
 				if (res > 0) {
-					resource = std::string(buffer.get(), res);
+					resourceSP = std::string(buffer.get(), res);
 				}
 				stream->close();
 			}
 			zipFile->close();
-			return resource;
-#endif
+			return resourceSP;
 		}
 
 		std::shared_ptr<IAFF4Container> openAFF4Container(const std::string& filename) noexcept {

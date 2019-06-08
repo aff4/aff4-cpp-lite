@@ -242,7 +242,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 		// missing end?
 		MapEntryPoint sparseRegion;
 		sparseRegion.offset = offset;
-		sparseRegion.length = size - offset;
+		sparseRegion.length = length - offset;
 		sparseRegion.streamOffset = offset;
 		sparseRegion.streamID = (uint32_t)mapGPSid;
 #if DEBUG

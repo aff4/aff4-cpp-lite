@@ -210,12 +210,12 @@ public:
 	 * @param segmentName The name of the segment.
 	 * @param headerOffset  The offset into the parent file which this segments header starts
 	 * @param offset The offset into the parent file which this segments data starts
-	 * @param length The compressed length of the segment
-	 * @param uncompressedLength The uncompressed length of the segment
+	 * @param length The uncompressed length of the segment
+	 * @param compressedLength The compressed length of the segment
 	 * @param compressionMethod The compression method to use if this segment is compressed.
 	 */
 	LIBAFF4_API ZipEntry(const std::string& segmentName, uint64_t headerOffset, uint64_t offset, uint64_t length,
-			uint64_t uncompressedLength, int compressionMethod);
+			uint64_t compressedLength, int compressionMethod);
 	virtual ~ZipEntry();
 
 	/**
@@ -240,20 +240,20 @@ public:
 		return offset;
 	}
 	/**
-	 * Get the compressed length of the segment
-	 * @return The compressed length
+	 * Get the (uncompressed) length of the segment
+	 * @return The length
 	 */
 	LIBAFF4_API uint64_t getLength() const {
 		return length;
 	}
 	/**
-	 * Get the uncompressed length of the segment
+	 * Get the compressed length of the segment
 	 * <p>
-	 * This will typically be equal to the compresed length if the segment is stored.
-	 * @return The uncompressed length
+	 * This will typically be equal to the uncompresed length if the segment is stored.
+	 * @return The compressed length
 	 */
-	LIBAFF4_API uint64_t getUncompressedLength() const {
-		return uncompressedLength;
+	LIBAFF4_API uint64_t getCompressedLength() const {
+		return compressedLength;
 	}
 
 	/**
@@ -284,7 +284,7 @@ private:
 	/**
 	 *  The uncompressed length of the segment
 	 */
-	const uint64_t uncompressedLength;
+	const uint64_t compressedLength;
 	/**
 	 *  The compression method to use if this segment is compressed.
 	 */

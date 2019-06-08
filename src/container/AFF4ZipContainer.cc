@@ -113,9 +113,9 @@ void AFF4ZipContainer::loadModel() noexcept {
 	if (stream != nullptr) {
 		std::unique_ptr<uint8_t[]> buffer(new uint8_t[stream->size()]);
 		int64_t res = stream->read(buffer.get(), stream->size(), 0);
+		// Attempt to construct a RDF model from the buffer.
+		model = std::make_shared<aff4::rdf::Model>();
 		if (res > 0) {
-			// Attempt to construct a RDF model from the buffer.
-			model = std::make_shared<aff4::rdf::Model>();
 			model->parse(buffer.get(), res);
 		}
 	}

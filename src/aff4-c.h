@@ -81,16 +81,26 @@ LIBAFF4_API void AFF4_init();
 
 /**
  * Open the given filename, and access the first aff4:Image in the container.
- * @param filename The filename to open.
- * @return Object handle, or -1 on error. See errno
+ * @param filename The filename to open. (UTF-8)
+ * @return Object handle, or -1 on error. See errno.
+ * (ENOENT = No Such File, or the file is not a valid AFF4 file).
  */
 LIBAFF4_API int AFF4_open(const char* filename);
 
 /**
  * Get the size of the AFF4 Object that was opened.
- * @return The size of the object.
+ * @return The size of the object, or -1 on error. See errno.
+ * (EBADF = Bad handle).
  */
 LIBAFF4_API int64_t AFF4_object_size(int handle);
+
+/**
+ * Get the block size of the AFF4 Object that was opened.
+ * @return The block size of the object, or -1 on error. See errno.
+ * (EBADF = Bad handle).
+ * (ENODATA = Value not set).
+ */
+LIBAFF4_API int64_t AFF4_object_blocksize(int handle);
 
 /**
  * Read a block from the given handle.

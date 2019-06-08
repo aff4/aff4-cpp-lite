@@ -34,6 +34,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #include "codec\DeflateCompression.h"
 #include "codec\LZ4Compression.h"
 #include "codec\CompressionCodec.h"
+#include "codec\ZlibCompression.h"
 #include <functional>
 #include <zlib.h>
 #include <snappy.h>
@@ -41,6 +42,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #define CPPUNIT_ASSERT Assert::IsTrue
 #define CPPUNIT_ASSERT_EQUAL Assert::AreEqual
+#define CPPUNIT_FAIL Assert::Fail
 
 static std::string srcText =
 "alksjdfwienflkdfasdfasfasdfasdfasdfadfasdflka jflaskjadflk;jas ;lkdfjlaskdfjlaskdjflkalksjdfwienflkdfasdfasfasdfasdfasdalksjdfwi";
@@ -164,6 +166,33 @@ TEST_METHOD(testDeflateResource) {
 	CPPUNIT_ASSERT(derived != nullptr);
 }
 
+TEST_METHOD(testZlib) {
+	std::string res = aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB);
+	std::shared_ptr<aff4::codec::CompressionCodec> codec = aff4::codec::getCodec(res, AFF4_DEFAULT_CHUNK_SIZE);
+	CPPUNIT_ASSERT(codec != nullptr);
+	CPPUNIT_ASSERT_EQUAL(res, codec->getResourceID());
+	CPPUNIT_ASSERT_EQUAL((uint32_t)AFF4_DEFAULT_CHUNK_SIZE, codec->getChunkSize());
+
+	// Ensure we get the correct derived type.
+	aff4::codec::CompressionCodec* codecPtr = codec.get();
+	aff4::codec::ZlibCompression* derived = dynamic_cast<aff4::codec::ZlibCompression*>(codecPtr);
+	CPPUNIT_ASSERT(derived != nullptr);
+}
+
+TEST_METHOD(testZlibResource) {
+	std::string res = aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB);
+	std::shared_ptr<aff4::codec::CompressionCodec> codec = aff4::codec::getCodec(
+			aff4::Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB, AFF4_DEFAULT_CHUNK_SIZE);
+	CPPUNIT_ASSERT(codec != nullptr);
+	CPPUNIT_ASSERT_EQUAL(res, codec->getResourceID());
+	CPPUNIT_ASSERT_EQUAL((uint32_t)AFF4_DEFAULT_CHUNK_SIZE, codec->getChunkSize());
+
+	// Ensure we get the correct derived type.
+	aff4::codec::CompressionCodec* codecPtr = codec.get();
+	aff4::codec::ZlibCompression* derived = dynamic_cast<aff4::codec::ZlibCompression*>(codecPtr);
+	CPPUNIT_ASSERT(derived != nullptr);
+}
+
 TEST_METHOD(testNull) {
 	std::string res = aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGE_COMPRESSION_STORED);
 	std::shared_ptr<aff4::codec::CompressionCodec> codec = aff4::codec::getCodec(res, AFF4_DEFAULT_CHUNK_SIZE);
@@ -261,15 +290,67 @@ TEST_METHOD(testDeflateCompression) {
 
 	// Compress with deflate
 	unsigned long int cres = blockLength * 2;
-	::compress((unsigned char*)cSource.get(), &cres, (const unsigned char*)source.get(), blockLength);
+	//::compress((unsigned char*)cSource.get(), &cres, (const unsigned char*)source.get(), blockLength);
+	z_stream zstream;
+	::memset(&zstream, 0, sizeof(zstream));
+	zstream.next_in = (Bytef*)source.get();
+	zstream.avail_in = blockLength;
+	zstream.next_out = (Bytef*)cSource.get();
+	zstream.avail_out = cres;
+	int zres = 0;
+	if ((zres = deflateInit2(&zstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY)) != Z_OK) {
+#ifdef _WIN32
+		CPPUNIT_FAIL(L"deflateInit2 failed");
+#else
+		CPPUNIT_FAIL("deflateInit2 failed");
+#endif
+		return;
+	}
 
-	CPPUNIT_ASSERT_EQUAL((unsigned long int )66, cres);
+	if (deflate(&zstream, Z_FINISH) != Z_STREAM_END) {
+		deflateEnd(&zstream);
+#ifdef _WIN32
+		CPPUNIT_FAIL(L"deflate failed");
+#else
+		CPPUNIT_FAIL("deflate failed");
+#endif
+		return;
+	}
+
+	deflateEnd(&zstream);
+	uInt out = zstream.total_out;
+
+	CPPUNIT_ASSERT_EQUAL((uInt)60, out);
 
 	// Decompress.
 	std::shared_ptr<aff4::codec::CompressionCodec> codec = aff4::codec::getCodec(
 			aff4::Lexicon::AFF4_IMAGE_COMPRESSION_DEFLATE, blockLength);
 
-	uint64_t res = codec->decompress(cSource.get(), 66, destination.get(), blockLength);
+	uint64_t res = codec->decompress(cSource.get(), out, destination.get(), blockLength);
+	CPPUNIT_ASSERT_EQUAL((uint64_t)blockLength, res);
+	std::string dest(destination.get(), blockLength);
+	CPPUNIT_ASSERT_EQUAL(srcText, dest);
+}
+
+TEST_METHOD(testZlibCompression) {
+	std::unique_ptr<char[]> source(new char[blockLength]);
+	std::unique_ptr<char[]> cSource(new char[blockLength * 2]);
+	std::unique_ptr<char[]> destination(new char[blockLength]);
+
+	::memcpy(source.get(), srcText.data(), blockLength);
+
+	// Compress with deflate
+	unsigned long int cres = blockLength * 2;
+	::compress((unsigned char*)cSource.get(), &cres, (const unsigned char*)source.get(), blockLength);
+
+	uInt out = cres;
+	CPPUNIT_ASSERT_EQUAL((uInt)66, out);
+
+	// Decompress.
+	std::shared_ptr<aff4::codec::CompressionCodec> codec = aff4::codec::getCodec(
+			aff4::Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB, blockLength);
+
+	uint64_t res = codec->decompress(cSource.get(), out, destination.get(), blockLength);
 	CPPUNIT_ASSERT_EQUAL((uint64_t)blockLength, res);
 	std::string dest(destination.get(), blockLength);
 	CPPUNIT_ASSERT_EQUAL(srcText, dest);

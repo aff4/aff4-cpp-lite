@@ -22,7 +22,7 @@ along with AFF4 CPP.  If not, see <http://www.gnu.org/licenses/>.
 #define PACKAGE_NAME "aff4"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "aff4 2.0.2"
+#define PACKAGE_STRING "aff4 2.0.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "aff4"
@@ -31,7 +31,7 @@ along with AFF4 CPP.  If not, see <http://www.gnu.org/licenses/>.
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.0.2"
+#define PACKAGE_VERSION "2.0.3"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
