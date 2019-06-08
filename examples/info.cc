@@ -98,21 +98,25 @@ int main(int argc, char* argv[]) {
 		 */
 
 		std::shared_ptr<aff4::IAFF4Map> map = image->getMap();
-		std::cout << "      Map : " << map->getResourceID() << std::endl;
-		printProperties(map, "        ");
+		if (map != nullptr) {
+			std::cout << "      Map : " << map->getResourceID() << std::endl;
+			printProperties(map, "        ");
 
-		/*
-		 * Get a list of all data streams that make up this image, and print their details.
-		 */
+			/*
+			 * Get a list of all data streams that make up this image, and print their details.
+			 */
 
-		std::vector<aff4::rdf::RDFValue> streams = map->getProperty(aff4::Lexicon::AFF4_DEPENDENT_STREAM);
-		for (aff4::rdf::RDFValue stream : streams) {
-			std::string streamRes = stream.getValue();
-			std::shared_ptr<aff4::IAFF4Resource> s = container->open(streamRes);
-			if (s != nullptr) {
-				std::cout << "      Stream : " << s->getResourceID() << std::endl;
-				printProperties(s, "        ");
+			std::vector<aff4::rdf::RDFValue> streams = map->getProperty(aff4::Lexicon::AFF4_DEPENDENT_STREAM);
+			for (aff4::rdf::RDFValue stream : streams) {
+				std::string streamRes = stream.getValue();
+				std::shared_ptr<aff4::IAFF4Resource> s = container->open(streamRes);
+				if (s != nullptr) {
+					std::cout << "      Stream : " << s->getResourceID() << std::endl;
+					printProperties(s, "        ");
+				}
 			}
+		} else {
+			std::cout << "      Map : NO MAP DEFINED" << std::endl;
 		}
 
 	}
