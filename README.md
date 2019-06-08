@@ -1,7 +1,7 @@
-AFF4 CPP Light v2.0
+AFF4 CPP Light v2.0.3
 -------------
 
-Copyright Schatz Forensic Pty Ltd, 2017-2018
+Copyright Schatz Forensic Pty Ltd, 2017-2019
 
 Released under the LGPL v3.0+
 
@@ -94,6 +94,6 @@ in the container.
 Notes:
 ------
 
-v2.0.0 is a near complete rewrite of the v1.0.0 of the library, and exhibits
+v2.0.3 is a near complete rewrite of the v1.0.0 of the library, and exhibits
 a completely new API model. We did this so we have a simple, easy to read C++ implementation.
  
