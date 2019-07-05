@@ -243,6 +243,10 @@ enum Lexicon {
 	 * aff4:BLAKE2B
 	 */
 	AFF4_DIGEST_BLAKE2B,
+	/**
+	 * aff4:BLAKE2B
+	 */
+	AFF4_DIGEST_BLAKE2B_,
 
 	/*
 	 * Map information
@@ -347,6 +351,37 @@ enum Lexicon {
 	 * Optional RDF type to define case examiner who performed the acquisition.
 	 */
 	AFF4_CASE_EXAMINER,
+
+	/*
+	 * BlackBag Technologies Custom Properties
+	 */
+
+	/**
+	 * APFS Container type
+	 */
+	BBT_APFS_CONTAINER_TYPE,
+	/**
+	* APFS Container type (T2)
+	*/
+	BBT_APFS_CONTAINER_TYPE_T2,
+	/**
+	* APFS Container type (Fusion)
+	*/
+	BBT_APFS_CONTAINER_TYPE_FUSION,
+	/**
+	* APFS Container type (Standard disk)
+	*/
+	BBT_APFS_CONTAINER_TYPE_STANDARD,
+	/**
+	* Volume/Disk contains extents.
+	*/
+	BBT_CONTAINS_EXTENTS,
+	/**
+	* Volume/Disk contains unallocated regions (sparse).
+	*/
+	BBT_CONTAINS_UNALLOCATED,
+
+
 };
 
 namespace lexicon {

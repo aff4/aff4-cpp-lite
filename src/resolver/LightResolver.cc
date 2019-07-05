@@ -117,6 +117,9 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 						// We don't have this file
 						std::string resID = aff4::container::getResourceID(absoluteFilename);
 						if (!resID.empty()) {
+#if DEBUG
+							fprintf(aff4::getDebugOutput(), "%s[%d] : Adding Volume %s => %s \n", __FILE__, __LINE__, resID.c_str(), absoluteFilename.c_str());
+#endif
 							volumes[resID] = absoluteFilename;
 						}
 					}
@@ -145,6 +148,9 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 					// We don't have this file
 					std::string resID = aff4::container::getResourceID(absoluteFilename);
 					if (!resID.empty()) {
+#if DEBUG
+						fprintf(aff4::getDebugOutput(), "%s[%d] : Adding Volume %s => %s \n", __FILE__, __LINE__, resID.c_str(), absoluteFilename.c_str());
+#endif
 						volumes[resID] = absoluteFilename;
 					}
 				}

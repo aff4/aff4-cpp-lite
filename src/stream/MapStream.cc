@@ -18,6 +18,8 @@
 #include "MapStream.h"
 #include "PortableEndian.h"
 
+#include <algorithm>
+
 using namespace aff4::stream::structs;
 
 namespace aff4 {
@@ -48,6 +50,9 @@ uint64_t MapStream::size() noexcept {
 
 void MapStream::close() noexcept {
 	if (!closed.exchange(true)) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Close aff4:Map %s \n", __FILE__, __LINE__, getResourceID().c_str());
+#endif
 		parent = nullptr;
 		streams.clear();
 		externalContainers.clear();
@@ -56,11 +61,17 @@ void MapStream::close() noexcept {
 
 int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	if (closed) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " on Closed Map Stream \n", __FILE__, __LINE__, offset, count);
+#endif
 		errno = EPERM;
 		return -1;
 	}
 	// If offset beyond end, return.
 	if (offset > size()) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 "? Offset Greater than Stream size \n", __FILE__, __LINE__, offset, count);
+#endif
 		return 0;
 	}
 	// If offset + count, will go beyond end, truncate count.
@@ -69,7 +80,6 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	}
 
 #if DEBUG
-//	fprintf( stderr, "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " \n", __FILE__, __LINE__, offset, count);
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 
@@ -106,6 +116,10 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		int64_t res = stream->read(buffer, streadReadLength, streamReadOffset);
 		if (res <= 0) {
 			// fail it.
+#if DEBUG
+			fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %s %" PRIx64 " : %" PRIx64 " FAILED READ \n", __FILE__, __LINE__, 
+				stream->getResourceID().c_str(), streamReadOffset, streadReadLength);
+#endif
 			return -1;
 		}
 		actualRead += streadReadLength;
@@ -113,6 +127,9 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		leftToRead -= streadReadLength;
 		buffer += streadReadLength;
 	}
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset - actualRead, count, actualRead);
+#endif
 	return actualRead;
 }
 
@@ -122,6 +139,9 @@ void MapStream::initStreamVector(std::shared_ptr<aff4::IAFF4Stream>& unknownOver
 	std::string segmentName = getResourceID() + "/idx";
 	std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
 	if (stream == nullptr) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Missing 'idx' %s \n", __FILE__, __LINE__, segmentName.c_str());
+#endif
 		return;
 	}
 	std::unique_ptr<char[]> bufferIDX(new char[stream->size()]);
@@ -148,14 +168,26 @@ void MapStream::initStreamVector(std::shared_ptr<aff4::IAFF4Stream>& unknownOver
 				}
 				// We have this stream from the parent container
 				if (stream != nullptr) {
+#if DEBUG
+					fprintf(aff4::getDebugOutput(), "%s[%d] : Local for Stream %s \n", __FILE__, __LINE__, line.c_str());
+#endif
 					streams.push_back(stream);
 				} else {
 					// look at the resolver for this stream.
+#if DEBUG
+					fprintf(aff4::getDebugOutput(), "%s[%d] : Query Resolver for Stream %s \n", __FILE__, __LINE__, line.c_str());
+#endif
 					stream = queryResolver(parent->getResolver(), line);
 					if (stream != nullptr) {
+#if DEBUG
+						fprintf(aff4::getDebugOutput(), "%s[%d] : Resolver provided Stream %s \n", __FILE__, __LINE__, line.c_str());
+#endif
 						streams.push_back(stream);
 					} else {
 						// Nothing from the resolver.
+#if DEBUG
+						fprintf(aff4::getDebugOutput(), "%s[%d] : Resolver FAILED to locate Stream %s \n", __FILE__, __LINE__, line.c_str());
+#endif
 						streams.push_back(aff4::stream::createUnknownStream(line));
 					}
 				}
@@ -170,6 +202,9 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 	std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
 	if (stream == nullptr) {
 		// reset the stream length
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Missing 'map' %s \n", __FILE__, __LINE__, segmentName.c_str());
+#endif
 		length = 0;
 		return;
 	}
@@ -202,11 +237,20 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 		buffer[i] = mapPoint;
 	}
 #endif
-
+	std::vector<MapEntryPoint> points;
 	uint64_t offset = 0;
 	// We have our map.
+	// Materialise all map entry points.
 	for (uint32_t i = 0; i < size; i++) {
 		MapEntryPoint mapPoint = buffer[i];
+		points.push_back(mapPoint);
+	}
+	// Sort all map entries
+	std::sort(points.begin(), points.end(), ::aff4::stream::structs::mapEntryPointCompare);
+
+	// Construct the map.
+	for (uint32_t i = 0; i < size; i++) {
+		MapEntryPoint mapPoint = points[i];
 #if DEBUG
 		fprintf( aff4::getDebugOutput(), "%s[%d] : MapEntry : %" PRIx64" : %" PRIx64" : %" PRIx64" : %" PRIx32"\n",
 				__FILE__, __LINE__, mapPoint.offset, mapPoint.length, mapPoint.streamOffset, mapPoint.streamID);
@@ -255,12 +299,18 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 	if (length == 0) {
 		length = offset;
 	}
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Created aff4:Map %s on length %" PRIu64 " \n", __FILE__, __LINE__, segmentName.c_str(), length);
+#endif
 
 }
 
 std::shared_ptr<aff4::IAFF4Stream> MapStream::queryResolver(aff4::IAFF4Resolver* resolver,
 		const std::string& resource) {
 	if (resolver == nullptr) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : No resolver? \n", __FILE__, __LINE__);
+#endif
 		return nullptr;
 	}
 	// Our parent doesn't have it, so check the external resolver.
@@ -341,6 +391,13 @@ std::map<uint64_t, aff4::stream::structs::MapEntryPoint>*  MapStream::getMap() {
 	return &map;
 }
 
-}
-/* namespace stream */
+
+/* Add the map entry point comparison. */
+namespace structs {
+	bool mapEntryPointCompare(const MapEntryPoint& i, const MapEntryPoint& j) {
+		return i.offset < j.offset;
+	}
+}  /* namespace structs */
+
+} /* namespace stream */
 } /* namespace aff4 */

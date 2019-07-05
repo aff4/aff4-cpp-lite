@@ -49,6 +49,11 @@
  * XSD Data type prefix
  */
 #define AFF4_XSD_PREFIX  "http://www.w3.org/2001/XMLSchema#"
+
+/**
+ * Black Bag Technologies base URI for custom properties
+ */
+#define BBT_BASE_URI     "https://blackbagtech.com/aff4/Schema#"
 /**
  * The default chunk size
  */

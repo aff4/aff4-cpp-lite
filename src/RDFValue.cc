@@ -48,7 +48,9 @@ static const std::map<std::string, aff4::Lexicon> aff4Mappings = { //
 				{ (AFF4_BASE_URI "SHA1"), aff4::Lexicon::AFF4_DIGEST_SHA1 }, //
 				{ (AFF4_BASE_URI "SHA256"), aff4::Lexicon::AFF4_DIGEST_SHA256 }, //
 				{ (AFF4_BASE_URI "SHA512"), aff4::Lexicon::AFF4_DIGEST_SHA512 }, //
-				{ (AFF4_BASE_URI "BLAKE2B"), aff4::Lexicon::AFF4_DIGEST_BLAKE2B }, //
+				{ (AFF4_BASE_URI "BLAKE2B"), aff4::Lexicon::AFF4_DIGEST_BLAKE2B }, // Evimetry Legacy
+				{ (AFF4_BASE_URI "Blake2b"), aff4::Lexicon::AFF4_DIGEST_BLAKE2B }, // Evimetry Legacy
+				{ (AFF4_BASE_URI "blake2b"), aff4::Lexicon::AFF4_DIGEST_BLAKE2B }, // AFF4 v1.0 std
 				{ (AFF4_BASE_URI "blockMapHashSHA512"), aff4::Lexicon::AFF4_DIGEST_BLOCK_MAP_HASH_SHA512 }, //
 		};
 

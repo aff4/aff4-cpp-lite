@@ -353,6 +353,9 @@ void Zip::parseCD() noexcept {
 }
 
 int64_t Zip::fileRead(void *buf, uint64_t count, uint64_t offset) noexcept {
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
+#endif
 	if ((count == 0) || (buf == nullptr)) {
 		return 0;
 	}
@@ -388,8 +391,14 @@ int64_t Zip::fileRead(void *buf, uint64_t count, uint64_t offset) noexcept {
 	readDetails.OffsetHigh = (DWORD)((offset & 0xffffffff00000000L) >> 32);
 
 	if (!ReadFile(fileHandle, buf, byteRead, &bytesRead, &readDetails)) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %" PRIx64 " : %" PRIx64 " FAILED \n", __FILE__, __LINE__, offset, count);
+#endif
 		return -1;
 	}
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read %" PRIx64 " : %" PRIx64 " => %" PRIx32 " \n", __FILE__, __LINE__, offset, count, byteRead);
+#endif
 	return byteRead;
 #endif
 	

@@ -156,6 +156,9 @@ uint64_t ImageStream::size() noexcept {
 
 void ImageStream::close() noexcept {
 	if (!closed.exchange(true)) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Close aff4:ImageStream %s \n", __FILE__, __LINE__, getResourceID().c_str());
+#endif
 		parent = nullptr;
 	}
 }
@@ -172,11 +175,17 @@ inline uint64_t floor(uint64_t offset, uint64_t size) {
 
 int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	if (closed) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " on Closed Stream \n", __FILE__, __LINE__, offset, count);
+#endif
 		errno = EPERM;
 		return -1;
 	}
 	// If offset beyond end, return.
 	if (offset > size()) {
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 "? Offset Greater than Stream size \n", __FILE__, __LINE__, offset, count);
+#endif
 		return 0;
 	}
 	// If offset + count, will go beyond end, truncate count.
@@ -185,7 +194,7 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	}
 
 #if DEBUG
-	//fprintf( stderr, "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " \n", __FILE__, __LINE__, offset, count);
+	fprintf( aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 
 	uint64_t leftToRead = count;
@@ -201,6 +210,9 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		cacheBuffer_t entry = chunkCache->get(chunkOffset);
 		if (entry.second == 0) {
 			// failed to read.
+#if DEBUG
+			fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " FAILED READ \n", __FILE__, __LINE__, offset, count, chunkOffset);
+#endif
 			return -1;
 		}
 		uint64_t delta = offset - chunkOffset;
@@ -213,6 +225,9 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		leftToRead -= toCopy;
 		buffer += toCopy;
 	}
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset - actualRead, count, actualRead);
+#endif
 	return actualRead;
 }
 

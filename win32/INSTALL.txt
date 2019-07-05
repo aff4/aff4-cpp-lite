@@ -1,4 +1,4 @@
-libaff4 2.0.1
+libaff4 2.0.3
 
 Installation Instructions for Visual Studio 2015+.
 

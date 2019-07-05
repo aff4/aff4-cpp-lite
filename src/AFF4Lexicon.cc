@@ -72,7 +72,8 @@ static const std::map<aff4::Lexicon, std::string> lexiconMappings = { //
 				{ AFF4_DIGEST_SHA1, (AFF4_BASE_URI "SHA1") }, //
 				{ AFF4_DIGEST_SHA256, (AFF4_BASE_URI "SHA256") }, //
 				{ AFF4_DIGEST_SHA512, (AFF4_BASE_URI "SHA512") }, //
-				{ AFF4_DIGEST_BLAKE2B, (AFF4_BASE_URI "Blake2b") }, //
+				{ AFF4_DIGEST_BLAKE2B, (AFF4_BASE_URI "blake2b") }, //
+				{ AFF4_DIGEST_BLAKE2B_, (AFF4_BASE_URI "Blake2b") }, //
 				{ AFF4_PAGESIZE, (AFF4_BASE_URI "pageSize") }, //
 				{ AFF4_MEMORY_PAGETABLE_ENTRY_OFFSET, (AFF4_BASE_URI "memoryPageTableEntryOffset") }, //
 				{ AFF4_MEMORY_INSTALLED_SIZE, (AFF4_BASE_URI "memoryInstalledSize") }, //
@@ -93,6 +94,14 @@ static const std::map<aff4::Lexicon, std::string> lexiconMappings = { //
 				{ AFF4_TOOL, (AFF4_BASE_URI "tool") }, //
 				{ AFF4_MINOR_VERSION, (AFF4_BASE_URI "toolMinorVersion") }, //
 				{ AFF4_MAJOR_VERSION, (AFF4_BASE_URI "toolMajorVersion") }, //
+
+				/* Black Bag Technologies Custom Properties */
+				{ BBT_APFS_CONTAINER_TYPE, (BBT_BASE_URI "APFSContainerType") }, //
+				{ BBT_APFS_CONTAINER_TYPE_STANDARD , (BBT_BASE_URI "APFSStandardContainerType") }, //
+				{ BBT_APFS_CONTAINER_TYPE_T2, (BBT_BASE_URI "APFST2ContainerType") }, //
+				{ BBT_APFS_CONTAINER_TYPE_FUSION, (BBT_BASE_URI "APFSFusionContainerType") }, //
+				{ BBT_CONTAINS_EXTENTS, (BBT_BASE_URI "ContainsExtents") }, //
+				{ BBT_CONTAINS_UNALLOCATED, (BBT_BASE_URI "ContainsUnallocated") }, //
 		};
 
 namespace lexicon {

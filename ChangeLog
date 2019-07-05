@@ -1,6 +1,14 @@
+-- v2.0.5
+
+-- Re-Release of v2.0.4 with different build options enabled.
+
+-- v2.0.4
+
++ Further Improve compatibility with AFF4 producers.
+
 -- v2.0.3
 
-+ Update zip header handling. Add compatibility for c-libaff4 implementation bugs and quirks.
++ Update zip header handling. Improve compatibility with AFF4 producers.
 
 -- v2.0.2
 

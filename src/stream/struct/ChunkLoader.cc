@@ -67,6 +67,11 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	uint64_t chunkOffset = index->getDataOffset() + point.offset;
 	uint64_t chunkLength = point.length;
 
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : ChunkOffset %" PRIu64 " ChunkLength %" PRIu64 " \n",
+		__FILE__, __LINE__, chunkOffset, chunkLength);
+#endif
+
 	/*
 	 * Chunk Offset and Chunk Length are for offsets into the direct ZIP level container. (we really
 	 * should get a IAFF4Stream for the zip segment, but lets shortcut and just read directly from the
@@ -93,10 +98,22 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	}
 	if (chunkLength != chunkSize) {
 		// decompress
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Decompress Chunk  [%" PRIu32 " : %" PRIu64 "] \n",
+			__FILE__, __LINE__, chunkSize, chunkLength);
+#endif
 		std::shared_ptr<uint8_t> dest(new uint8_t[chunkSize], std::default_delete<uint8_t[]>());
-		codec->decompress(buffer.get(), chunkLength, dest.get(), chunkSize);
+		uint64_t decSize = codec->decompress(buffer.get(), chunkLength, dest.get(), chunkSize);
+#if DEBUG
+		fprintf(aff4::getDebugOutput(), "%s[%d] : Decompressed Chunk  [%" PRIu32 " : %" PRIu64 "] => %" PRIu64 " \n",
+			__FILE__, __LINE__, chunkSize, chunkLength, decSize);
+#endif
 		return std::make_pair(dest, chunkSize);
 	}
+#if DEBUG
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Stored Chunk  [%" PRIu32 " : %" PRIu64 "] \n",
+		__FILE__, __LINE__, chunkSize, chunkLength);
+#endif
 	// No decompression needed, just return.
 	return std::make_pair(buffer, chunkSize);
 }

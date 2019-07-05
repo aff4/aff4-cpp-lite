@@ -310,6 +310,9 @@ slowPath:
 		}
 
 		aff4::IAFF4Resolver* createResolver(std::string path, bool scanSubFolders) noexcept {
+#if DEBUG
+			fprintf(aff4::getDebugOutput(), "%s[%d] : Create Resolver : %s, %d \n", __FILE__, __LINE__, path.c_str(), scanSubFolders);
+#endif
 			if (path.empty()) {
 				return nullptr;
 			}
@@ -323,6 +326,9 @@ slowPath:
 			 * See if it exists.
 			 */
 			if (!aff4::util::fileExists(path)) {
+#if DEBUG
+				fprintf(aff4::getDebugOutput(), "%s[%d] : Create Resolver Path doesn't exist? %s, %d \n", __FILE__, __LINE__, path.c_str(), scanSubFolders);
+#endif
 				return nullptr;
 			}
 

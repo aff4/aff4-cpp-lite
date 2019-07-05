@@ -68,6 +68,15 @@ PACKED_STRUCT(MapEntryPoint {
 
 });
 
+/**
+* Map Entry Compare Function.
+*
+* @param i The first map point.
+* @param j The second map point.
+* @return TRUE if the first map point is before the second map point.
+*/
+bool mapEntryPointCompare(const MapEntryPoint& i, const MapEntryPoint& j);
+
 } /* namespace structs */
 } /* namespace stream */
 } /* namespace aff4 */

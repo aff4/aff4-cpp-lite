@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([aff4], [2.0.3], [info@evimetry.com])
+AC_INIT([aff4], [2.0.6], [info@evimetry.com])
 AC_CONFIG_HEADERS([aff4config.h])
 AC_CONFIG_SRCDIR([src/aff4.cc])
 AC_CONFIG_MACRO_DIR([m4])

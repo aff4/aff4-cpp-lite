@@ -53,7 +53,7 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 		}
 	}
 #if DEBUG
-	fprintf(aff4::getDebugOutput(), "%s[%d] : Length  %" PRIu64 " (%" PRIx64 ")\n", __FILE__, __LINE__, length, length);
+	fprintf(aff4::getDebugOutput(), "%s[%d] : Map Length  %" PRIu64 " (%" PRIx64 ")\n", __FILE__, __LINE__, length, length);
 #endif
 
 	/*
