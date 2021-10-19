@@ -50,7 +50,7 @@ uint64_t MapStream::size() noexcept {
 
 void MapStream::close() noexcept {
 	if (!closed.exchange(true)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Close aff4:Map %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 		parent = nullptr;
@@ -61,7 +61,7 @@ void MapStream::close() noexcept {
 
 int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	if (closed) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " on Closed Map Stream \n", __FILE__, __LINE__, offset, count);
 #endif
 		errno = EPERM;
@@ -69,7 +69,7 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	}
 	// If offset beyond end, return.
 	if (offset > size()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 "? Offset Greater than Stream size \n", __FILE__, __LINE__, offset, count);
 #endif
 		return 0;
@@ -79,7 +79,7 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		count -= ((offset + count) - size());
 	}
 
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 
@@ -116,7 +116,7 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		int64_t res = stream->read(buffer, streadReadLength, streamReadOffset);
 		if (res <= 0) {
 			// fail it.
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %s %" PRIx64 " : %" PRIx64 " FAILED READ \n", __FILE__, __LINE__, 
 				stream->getResourceID().c_str(), streamReadOffset, streadReadLength);
 #endif
@@ -127,7 +127,7 @@ int64_t MapStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		leftToRead -= streadReadLength;
 		buffer += streadReadLength;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset - actualRead, count, actualRead);
 #endif
 	return actualRead;
@@ -139,7 +139,7 @@ void MapStream::initStreamVector(std::shared_ptr<aff4::IAFF4Stream>& unknownOver
 	std::string segmentName = getResourceID() + "/idx";
 	std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
 	if (stream == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Missing 'idx' %s \n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 		return;
@@ -156,7 +156,7 @@ void MapStream::initStreamVector(std::shared_ptr<aff4::IAFF4Stream>& unknownOver
 
 		while (std::getline(data, line, '\n')) {
 			if (!line.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf( aff4::getDebugOutput(), "%s[%d] : Stream : %s\n", __FILE__, __LINE__, line.c_str());
 #endif
 				std::shared_ptr<IAFF4Stream> stream;
@@ -168,24 +168,24 @@ void MapStream::initStreamVector(std::shared_ptr<aff4::IAFF4Stream>& unknownOver
 				}
 				// We have this stream from the parent container
 				if (stream != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : Local for Stream %s \n", __FILE__, __LINE__, line.c_str());
 #endif
 					streams.push_back(stream);
 				} else {
 					// look at the resolver for this stream.
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : Query Resolver for Stream %s \n", __FILE__, __LINE__, line.c_str());
 #endif
 					stream = queryResolver(parent->getResolver(), line);
 					if (stream != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 						fprintf(aff4::getDebugOutput(), "%s[%d] : Resolver provided Stream %s \n", __FILE__, __LINE__, line.c_str());
 #endif
 						streams.push_back(stream);
 					} else {
 						// Nothing from the resolver.
-#if DEBUG
+#if DEBUG_VERBOSE
 						fprintf(aff4::getDebugOutput(), "%s[%d] : Resolver FAILED to locate Stream %s \n", __FILE__, __LINE__, line.c_str());
 #endif
 						streams.push_back(aff4::stream::createUnknownStream(line));
@@ -202,7 +202,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 	std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
 	if (stream == nullptr) {
 		// reset the stream length
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Missing 'map' %s \n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 		length = 0;
@@ -251,7 +251,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 	// Construct the map.
 	for (uint32_t i = 0; i < size; i++) {
 		MapEntryPoint mapPoint = points[i];
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : MapEntry : %" PRIx64" : %" PRIx64" : %" PRIx64" : %" PRIx32"\n",
 				__FILE__, __LINE__, mapPoint.offset, mapPoint.length, mapPoint.streamOffset, mapPoint.streamID);
 #endif
@@ -263,7 +263,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 			sparseRegion.length = mapPoint.offset - offset;
 			sparseRegion.streamOffset = offset;
 			sparseRegion.streamID = (uint32_t)mapGPSid;
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Insert Sparse Region MapEntry : %" PRIx64" : %" PRIx64" : %" PRIx64" : %" PRIx32"\n",
 					__FILE__, __LINE__, sparseRegion.offset, sparseRegion.length, sparseRegion.streamOffset, sparseRegion.streamID);
 #endif
@@ -271,7 +271,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 			offset = mapPoint.offset;
 		}
 		if (mapPoint.streamID >= streams.size()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Unknown Stream ID for : %" PRIx64" : %" PRIx64" : %" PRIx64" : %" PRIx32"\n",
 					__FILE__, __LINE__, mapPoint.offset, mapPoint.length, mapPoint.streamOffset, mapPoint.streamID);
 #endif
@@ -289,7 +289,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 		sparseRegion.length = length - offset;
 		sparseRegion.streamOffset = offset;
 		sparseRegion.streamID = (uint32_t)mapGPSid;
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Insert Sparse Region MapEntry : %" PRIx64" : %" PRIx64" : %" PRIx64" : %" PRIx32"\n",
 				__FILE__, __LINE__, sparseRegion.offset, sparseRegion.length, sparseRegion.streamOffset, sparseRegion.streamID);
 #endif
@@ -299,7 +299,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 	if (length == 0) {
 		length = offset;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Created aff4:Map %s on length %" PRIu64 " \n", __FILE__, __LINE__, segmentName.c_str(), length);
 #endif
 
@@ -308,7 +308,7 @@ void MapStream::initMap(std::shared_ptr<aff4::IAFF4Stream>& mapGapStream) {
 std::shared_ptr<aff4::IAFF4Stream> MapStream::queryResolver(aff4::IAFF4Resolver* resolver,
 		const std::string& resource) {
 	if (resolver == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : No resolver? \n", __FILE__, __LINE__);
 #endif
 		return nullptr;

@@ -55,7 +55,7 @@ static const std::map<std::string, aff4::Lexicon> aff4Mappings = { //
 		};
 
 XSDType getType(const std::string& type) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Determine XSD type: %s\n", __FILE__, __LINE__, type.c_str());
 #endif
 	if (type.empty()) {
@@ -70,7 +70,7 @@ XSDType getType(const std::string& type) {
 }
 
 aff4::Lexicon getAFF4Type(const std::string& type) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Determine AFF4 Data type: %s\n", __FILE__, __LINE__, type.c_str());
 #endif
 	if (type.empty()) {
@@ -80,7 +80,7 @@ aff4::Lexicon getAFF4Type(const std::string& type) {
 	if (it != aff4Mappings.end()) {
 		return it->second;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Unknown AFF4 type? %s\n", __FILE__, __LINE__, type.c_str());
 #endif
 	// Default as unknown.
@@ -129,7 +129,7 @@ time_t my_timegm(register struct tm * t)
 }
 
 std::chrono::system_clock::time_point getTime(const std::string& value) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Convert XSDDateTime: %s\n", __FILE__, __LINE__, value.c_str());
 #endif
 	// The time format should be RFC3339

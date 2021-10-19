@@ -34,34 +34,34 @@ std::shared_ptr<CompressionCodec> getCodec(aff4::Lexicon resource, uint32_t chun
 	switch (resource) {
 	case Lexicon::AFF4_IMAGE_COMPRESSION_SNAPPY:
 	case Lexicon::AFF4_IMAGE_COMPRESSION_SNAPPY2:
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Create Snappy Decompressor \n", __FILE__, __LINE__);
 #endif
 		return std::make_shared<SnappyCompression>(chunkSize);
 	case Lexicon::AFF4_IMAGE_COMPRESSION_LZ4:
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Create LZ4 Decompressor \n", __FILE__, __LINE__);
 #endif
 		return std::make_shared<LZ4Compression>(chunkSize);
 	case Lexicon::AFF4_IMAGE_COMPRESSION_DEFLATE:
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Create Deflate Decompressor \n", __FILE__, __LINE__);
 #endif
 		return std::make_shared<DeflateCompression>(chunkSize);
 	case Lexicon::AFF4_IMAGE_COMPRESSION_STORED:
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Create Stored Decompressor \n", __FILE__, __LINE__);
 #endif
 		return std::make_shared<NullCompression>(chunkSize);
 	case Lexicon::AFF4_IMAGE_COMPRESSION_ZLIB:
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Create ZLib Decompressor \n", __FILE__, __LINE__);
 #endif
 		return std::make_shared<ZlibCompression>(chunkSize);
 	default:
 		break;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Unknown Compression Codec : %s\n", __FILE__, __LINE__,
 			aff4::lexicon::getLexiconString(resource).c_str());
 #endif

@@ -42,12 +42,12 @@ BevvyIndex::BevvyIndex(const std::string& resource, uint32_t bevvyID, aff4::cont
 
 	// Load the contents of the bevvy Index.
 	segmentName = segmentName + ".index";
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Loading Bevvy Index : %s \n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 	std::shared_ptr<aff4::IAFF4Stream> stream = parent->getSegment(segmentName);
 	if (stream == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Loading Bevvy Index Failed - missing segment? \n", __FILE__, __LINE__);
 #endif
 		buffer = nullptr;
@@ -59,7 +59,7 @@ BevvyIndex::BevvyIndex(const std::string& resource, uint32_t bevvyID, aff4::cont
 		buffer = std::unique_ptr<ImageStreamPoint[]>(new ImageStreamPoint[size]);
 		stream->read(buffer.get(), streamSize, 0);
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Loading Bevvy Index Size %" PRIu64 "? \n", __FILE__, __LINE__, streamSize);
 #endif
 	stream->close();
@@ -90,7 +90,7 @@ uint64_t BevvyIndex::getDataOffset() const noexcept {
 
 ImageStreamPoint BevvyIndex::getPoint(uint32_t offset) const noexcept {
 	if (offset >= size || buffer == nullptr || parent == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Unknown Point? %x \n", __FILE__, __LINE__, offset);
 #endif
 		ImageStreamPoint pt;

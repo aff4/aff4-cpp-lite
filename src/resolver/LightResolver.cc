@@ -26,7 +26,7 @@ LightResolver::LightResolver(const std::string& resource, const std::string& pat
 
 	// Single property.
 	addProperty(aff4::Lexicon::AFF4_FILENAME, aff4::rdf::RDFValue(path));
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : LightResolver: %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	// refresh
@@ -42,7 +42,7 @@ LightResolver::~LightResolver() {
  * From IAFF4Resolver
  */
 std::shared_ptr<aff4::IAFF4Resource> LightResolver::open(const std::string& resource) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Open Resource %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	if (hasResource(resource)) {
@@ -60,7 +60,7 @@ std::shared_ptr<aff4::IAFF4Resource> LightResolver::open(const std::string& reso
 }
 
 bool LightResolver::hasResource(const std::string& resource) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Has Resource %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	if (resource.empty()) {
@@ -93,7 +93,7 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 	if (path.empty()) {
 		return;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Scanning Path %s\n", __FILE__, __LINE__, path.c_str());
 #endif
 #ifdef _WIN32
@@ -117,7 +117,7 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 						// We don't have this file
 						std::string resID = aff4::container::getResourceID(absoluteFilename);
 						if (!resID.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 							fprintf(aff4::getDebugOutput(), "%s[%d] : Adding Volume %s => %s \n", __FILE__, __LINE__, resID.c_str(), absoluteFilename.c_str());
 #endif
 							volumes[resID] = absoluteFilename;
@@ -148,7 +148,7 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 					// We don't have this file
 					std::string resID = aff4::container::getResourceID(absoluteFilename);
 					if (!resID.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 						fprintf(aff4::getDebugOutput(), "%s[%d] : Adding Volume %s => %s \n", __FILE__, __LINE__, resID.c_str(), absoluteFilename.c_str());
 #endif
 						volumes[resID] = absoluteFilename;

@@ -36,7 +36,7 @@ uint64_t SnappyCompression::decompress(void* source, uint64_t srcSize, void* des
 	if (snappy::RawUncompress((char*) source, srcSize, (char*) destination)) {
 		return destSize;
 	} else {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Snappy decompression failure\n", __FILE__, __LINE__);
 #endif
 		return 0;

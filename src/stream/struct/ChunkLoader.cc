@@ -36,7 +36,7 @@ ChunkLoader::~ChunkLoader() {
 
 cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Loading Buffer: %" PRIu64 " \n", __FILE__, __LINE__, offset);
 #endif
 
@@ -45,7 +45,7 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	std::shared_ptr<BevvyIndex> index = bevvyCache->get((uint32_t) bevvyID);
 	if (index == nullptr) {
 		// failed to load.
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Failed to acquire Bevvy Index %" PRIu64 " for Buffer: %" PRIu64 " \n", __FILE__,
 		__LINE__, bevvyID, offset);
 #endif
@@ -57,7 +57,7 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	ImageStreamPoint point = index->getPoint((uint32_t) chunkID);
 	if (point.length == 0) {
 		// point has no length
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Failed to read Bevvy Index Point (bevvy: %" PRIu64 ") for Buffer: %" PRIu64 " \n",
 		__FILE__, __LINE__, bevvyID, offset);
 #endif
@@ -67,7 +67,7 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	uint64_t chunkOffset = index->getDataOffset() + point.offset;
 	uint64_t chunkLength = point.length;
 
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : ChunkOffset %" PRIu64 " ChunkLength %" PRIu64 " \n",
 		__FILE__, __LINE__, chunkOffset, chunkLength);
 #endif
@@ -83,7 +83,7 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	uint64_t toRead = chunkLength;
 	uint8_t* buf = buffer.get();
 	while (toRead > 0) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Reading Chunk [%" PRIu64 ":%" PRIu64 "] for Buffer: %" PRIu64 " \n",
 		__FILE__, __LINE__, chunkOffset, toRead, offset);
 #endif
@@ -98,19 +98,19 @@ cacheBuffer_t ChunkLoader::load(uint64_t offset) {
 	}
 	if (chunkLength != chunkSize) {
 		// decompress
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Decompress Chunk  [%" PRIu32 " : %" PRIu64 "] \n",
 			__FILE__, __LINE__, chunkSize, chunkLength);
 #endif
 		std::shared_ptr<uint8_t> dest(new uint8_t[chunkSize], std::default_delete<uint8_t[]>());
 		uint64_t decSize = codec->decompress(buffer.get(), chunkLength, dest.get(), chunkSize);
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Decompressed Chunk  [%" PRIu32 " : %" PRIu64 "] => %" PRIu64 " \n",
 			__FILE__, __LINE__, chunkSize, chunkLength, decSize);
 #endif
 		return std::make_pair(dest, chunkSize);
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Stored Chunk  [%" PRIu32 " : %" PRIu64 "] \n",
 		__FILE__, __LINE__, chunkSize, chunkLength);
 #endif

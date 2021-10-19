@@ -48,7 +48,7 @@ namespace aff4 {
 		 * @throws std::system_error If opening the file failed.
 		 */
 		std::shared_ptr<IAFF4Container> openContainer(const std::string& filename) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 			/*
@@ -56,7 +56,7 @@ namespace aff4 {
 			 */
 			if (!aff4::util::isFile(filename)) {
 				// failed.
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : %s is NOT a file.\n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return nullptr;
@@ -67,7 +67,7 @@ namespace aff4 {
 			 */
 			if (!isAFF4Container(filename)) {
 				// failed.
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : %s does not have .af4 or .aff4 extension\n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return nullptr;
@@ -76,7 +76,7 @@ namespace aff4 {
 			std::string resource = getResourceID(filename);
 			if (resource.empty()) {
 				// No resource?
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : %s does not have a resource ID\n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return nullptr;
@@ -90,7 +90,7 @@ namespace aff4 {
 				 * failed, actually, we should never see this, unless the file has been removed between the last
 				 * getResourceID() call and reopening it here.
 				 */
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : %s has NO entries?\n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return nullptr;
@@ -129,7 +129,7 @@ namespace aff4 {
 			int fileHandle = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
 			if (fileHandle == -1) {
 				// we failed, so return nothing. (error will be in errno).
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to open container : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return "";
@@ -137,7 +137,7 @@ namespace aff4 {
 			int read = ::pread64(fileHandle, buffer.get(), AFF4_RESOURCE_BUFFER_SIZE, 0);
 			::close(fileHandle);
 			if (read != AFF4_RESOURCE_BUFFER_SIZE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to read %d bytes from the container : %s = %d \n", __FILE__, __LINE__, AFF4_RESOURCE_BUFFER_SIZE, filename.c_str(), read);
 #endif
 				return "";
@@ -150,7 +150,7 @@ namespace aff4 {
 			std::wstring wpath = aff4::util::s2ws(filename); // Convert the filename to UTF-16/WString for Win32 API
 			HANDLE fileHandle = CreateFile(wpath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS, NULL);
 			if (fileHandle == INVALID_HANDLE_VALUE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to open container : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 				return "";
@@ -159,7 +159,7 @@ namespace aff4 {
 			BOOL res = ReadFile(fileHandle, buffer.get(), AFF4_RESOURCE_BUFFER_SIZE, &read, NULL);
 			::CloseHandle(fileHandle);
 			if (res == FALSE || read != AFF4_RESOURCE_BUFFER_SIZE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to read %d bytes from the container : %s = %d \n", __FILE__, __LINE__, AFF4_RESOURCE_BUFFER_SIZE, filename.c_str(), read);
 #endif
 				return "";
@@ -174,19 +174,19 @@ namespace aff4 {
 			aff4::zip::structs::ZipFileHeader* header = (aff4::zip::structs::ZipFileHeader*)(buffer.get());
 			// Start sanity check.
 			if (header->magic != 0x4034b50) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid PKZIP Magic number : %s = 0x%x \n", __FILE__, __LINE__, filename.c_str(), header->magic);
 #endif
 				return "";
 			}
 			if (header->compression_method != 0) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid PKZIP compression method : %s = %d \n", __FILE__, __LINE__, filename.c_str(), header->compression_method);
 #endif
 				goto slowPath;
 			}
 			if (header->file_name_length != 0x15) { // 'container.description'
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid segment name length : %s = %d != 0x15\n", __FILE__, __LINE__, filename.c_str(), header->file_name_length);
 #endif
 				goto slowPath;
@@ -195,7 +195,7 @@ namespace aff4 {
 			filenameLength = le16toh(header->file_name_length);
 			segmentName = std::string((char*)(buffer.get() + sizeof(aff4::zip::structs::ZipFileHeader)), filenameLength);
 			if (segmentName.compare(AFF4_FILEDESCRIPTOR) != 0) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid segment name : %s = %s\n", __FILE__, __LINE__, filename.c_str(), segmentName.c_str());
 #endif
 				goto slowPath;
@@ -252,7 +252,7 @@ namespace aff4 {
 			if ((segmentEntrySize == 0) || //
 				(segmentEntrySize > (AFF4_RESOURCE_BUFFER_SIZE - (sizeof(aff4::zip::structs::ZipFileHeader) - header->file_name_length - header->extra_field_len)))) {
 				// Too large...
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Segment appears too large for container.description? : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 				goto slowPath;
@@ -310,7 +310,7 @@ slowPath:
 		}
 
 		aff4::IAFF4Resolver* createResolver(std::string path, bool scanSubFolders) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Create Resolver : %s, %d \n", __FILE__, __LINE__, path.c_str(), scanSubFolders);
 #endif
 			if (path.empty()) {
@@ -326,7 +326,7 @@ slowPath:
 			 * See if it exists.
 			 */
 			if (!aff4::util::fileExists(path)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Create Resolver Path doesn't exist? %s, %d \n", __FILE__, __LINE__, path.c_str(), scanSubFolders);
 #endif
 				return nullptr;
