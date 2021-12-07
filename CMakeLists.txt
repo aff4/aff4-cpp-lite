@@ -74,4 +74,9 @@ SET(SOURCES
 )
 
 ADD_LIBRARY(aff4-cpp-lite ${SOURCES})
-target_link_libraries(aff4-cpp-lite raptor2)
+
+TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE Raptor2)
+TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE Snappy)
+TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE OpenSSL)
+TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE ZLIB)
+TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE LZ4::LZ4)
