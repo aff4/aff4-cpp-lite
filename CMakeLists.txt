@@ -70,7 +70,7 @@ SET(SOURCES
   src/codec/ZlibCompression.cc src/codec/ZlibCompression.h
   src/codec/LZ4Compression.cc src/codec/LZ4Compression.h
   src/codec/SnappyCompression.cc src/codec/SnappyCompression.h
-  src/resolver/LightResolver.cc src/resolver/LightResolver.h  
+  src/resolver/LightResolver.cc src/resolver/LightResolver.h
 )
 
 ADD_LIBRARY(aff4-cpp-lite ${SOURCES})
@@ -80,3 +80,40 @@ TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE Snappy)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE OpenSSL)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE ZLIB)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE LZ4::LZ4)
+
+FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/raptor2.pc
+"prefix=${CMAKE_INSTALL_PREFIX}
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
+includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}
+
+Name: aff4-cpp-lite library
+Description: aff4-cpp-lite library
+Version: ${VERSION}
+Libs: -L\${libdir} -libaff4
+Cflags: -I\${includedir}
+")
+
+INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}src/aff4.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/aff4-c.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/AFF4Containers.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/AFF4Defaults.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/AFF4Lexicon.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Container.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Image.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Map.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Resolver.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Resource.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/IAFF4Stream.h
+    ${CMAKE_CURRENT_BINARY_DIR}src/RDFValue.h
+
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+INSTALL(
+    TARGETS aff4-cpp-lite
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
