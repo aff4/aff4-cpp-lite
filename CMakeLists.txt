@@ -14,7 +14,7 @@ FIND_PACKAGE(LZ4 REQUIRED)
 
 add_definitions(-DUNICODE -DLIBAFF4_EXPORTS=0 -DRAPTOR_STATIC)
 
-INCLUDE_DIRECTORIES(
+target_include_directories(
   ..
   win32/libaff4/src
   win32/libaff4
@@ -35,7 +35,7 @@ INCLUDE_DIRECTORIES(
 
 SET(SOURCES
   win32/libaff4/aff4config.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src/stdafx.h
+  win32/libaff4/src/stdafx.h
 
   src/aff4.cc
   src/aff4-c.cc
