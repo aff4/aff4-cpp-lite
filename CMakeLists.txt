@@ -15,7 +15,6 @@ FIND_PACKAGE(LZ4 REQUIRED)
 add_definitions(-DUNICODE -DLIBAFF4_EXPORTS=0 -DRAPTOR_STATIC)
 
 target_include_directories(
-  ..
   win32/libaff4/src
   win32/libaff4
   
