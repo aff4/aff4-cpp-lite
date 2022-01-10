@@ -15,22 +15,23 @@ FIND_PACKAGE(LZ4 REQUIRED)
 add_definitions(-DUNICODE -DLIBAFF4_EXPORTS=0 -DRAPTOR_STATIC)
 
 INCLUDE_DIRECTORIES(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4
+  .
+  ..
+  win32/libaff4/src
+  win32/libaff4
   
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/codec
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/container
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/image
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/map
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/rdf
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/resolver
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/resource
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/stream
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/stream/struct
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/zip
+  src
+  src/codec
+  src/container
+  src/image
+  src/map
+  src/rdf
+  src/resolver
+  src/resource
+  src/stream
+  src/stream/struct
+  src/utils
+  src/zip
 )
 
 SET(SOURCES
