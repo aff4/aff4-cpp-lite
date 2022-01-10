@@ -16,21 +16,21 @@ add_definitions(-DUNICODE -DLIBAFF4_EXPORTS=0 -DRAPTOR_STATIC)
 
 INCLUDE_DIRECTORIES(
   ..
-  win32/libaff4/src
-  win32/libaff4
+  ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4
   
-  src
-  src/codec
-  src/container
-  src/image
-  src/map
-  src/rdf
-  src/resolver
-  src/resource
-  src/stream
-  src/stream/struct
-  src/utils
-  src/zip
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/codec
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/container
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/image
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/map
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/rdf
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/resolver
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/resource
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/stream
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/stream/struct
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/zip
 )
 
 SET(SOURCES
@@ -81,7 +81,7 @@ TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE OpenSSL)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE ZLIB)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE LZ4::LZ4)
 
-FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/raptor2.pc
+FILE(#WRITE ${CMAKE_CURRENT_BINARY_DIR}/aff4.pc
 "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
