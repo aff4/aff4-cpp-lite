@@ -34,14 +34,14 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(SOURCES
-  win32/libaff4/aff4config.h
-  win32/libaff4/src/stdafx.h
+  aff4config.h
+  stdafx.h
 
-  src/aff4.cc
-  src/aff4-c.cc
-  src/AFF4Lexicon.cc
-  src/RDFValue.cc
-  src/AFF4Containers.cc
+  aff4.cc
+  aff4-c.cc
+  AFF4Lexicon.cc
+  RDFValue.cc
+  AFF4Containers.cc
   
   src/utils/StringUtil.cc src/utils/StringUtil.h
   src/utils/FileUtil.h
