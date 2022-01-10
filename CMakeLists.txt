@@ -14,24 +14,6 @@ FIND_PACKAGE(LZ4 REQUIRED)
 
 add_definitions(-DUNICODE -DLIBAFF4_EXPORTS=0 -DRAPTOR_STATIC)
 
-target_include_directories(aff4-cpp-lite PUBLIC
-  win32/libaff4/src
-  win32/libaff4
-  
-  src
-  src/codec
-  src/container
-  src/image
-  src/map
-  src/rdf
-  src/resolver
-  src/resource
-  src/stream
-  src/stream/struct
-  src/utils
-  src/zip
-)
-
 SET(SOURCES
   win32/libaff4/aff4config.h
   win32/libaff4/src/stdafx.h
@@ -73,6 +55,24 @@ SET(SOURCES
 )
 
 ADD_LIBRARY(aff4-cpp-lite ${SOURCES})
+
+target_include_directories(aff4-cpp-lite PUBLIC
+  win32/libaff4/src
+  win32/libaff4
+  
+  src
+  src/codec
+  src/container
+  src/image
+  src/map
+  src/rdf
+  src/resolver
+  src/resource
+  src/stream
+  src/stream/struct
+  src/utils
+  src/zip
+)
 
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE Raptor2)
 TARGET_LINK_LIBRARIES(aff4-cpp-lite PRIVATE Snappy)
