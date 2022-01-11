@@ -111,7 +111,7 @@ SET(INSTALL_HEADERS
 if (WIN32)
     SET(INSTALL_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src/stdafx.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src/targerver.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/win32/libaff4/src/targetver.h
         ${INSTALL_HEADERS}
     )
 endif()
