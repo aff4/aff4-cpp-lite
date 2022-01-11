@@ -93,7 +93,7 @@ Libs: -L\${libdir} -libaff4
 Cflags: -I\${includedir}
 ")
 
-INSTALL(FILES
+SET(INSTALL_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/src/aff4.h
     ${CMAKE_CURRENT_BINARY_DIR}/src/aff4-c.h
     ${CMAKE_CURRENT_BINARY_DIR}/src/AFF4Containers.h
@@ -106,7 +106,17 @@ INSTALL(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/src/IAFF4Resource.h
     ${CMAKE_CURRENT_BINARY_DIR}/src/IAFF4Stream.h
     ${CMAKE_CURRENT_BINARY_DIR}/src/RDFValue.h
+}
 
+if (WIN32)
+    SET(INSTALL_HEADERS
+        ${CMAKE_CURRENT_BINARY_DIR}/win32/libaff4/src/stdafx.h
+        ${CMAKE_CURRENT_BINARY_DIR}/win32/libaff4/src/targerver.h
+        ${INSTALL_HEADERS}
+    )
+
+INSTALL(FILES
+    ${INSTALL_HEADERS}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
