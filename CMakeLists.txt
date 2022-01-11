@@ -114,6 +114,7 @@ if (WIN32)
         ${CMAKE_CURRENT_BINARY_DIR}/win32/libaff4/src/targerver.h
         ${INSTALL_HEADERS}
     )
+endif()
 
 INSTALL(FILES
     ${INSTALL_HEADERS}
