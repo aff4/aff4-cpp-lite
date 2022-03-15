@@ -22,7 +22,7 @@ namespace map {
 
 AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer* parent) :
 		AFF4Resource(resource), parent(parent), length(0), unknownOverride(nullptr), mapGapStreamOverride(nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create Map  %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 
@@ -52,7 +52,7 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 			}
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Map Length  %" PRIu64 " (%" PRIx64 ")\n", __FILE__, __LINE__, length, length);
 #endif
 
@@ -73,7 +73,7 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 	if (mapGapStreamOverride == nullptr) {
 		mapGapStreamOverride = aff4::stream::createZeroStream();
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : mapGapDefaultStream = %s\n", __FILE__, __LINE__, mapGapStreamOverride->getResourceID().c_str());
 #endif
 	values = getProperty(aff4::Lexicon::AFF4_DEPENDENT_STREAM);
@@ -99,7 +99,7 @@ AFF4Map::AFF4Map(const std::string& resource, aff4::container::AFF4ZipContainer*
 			std::vector<aff4::rdf::RDFValue> streams;
 			while (std::getline(data, line, '\n')) {
 				if (!line.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : IDX Stream : %s\n", __FILE__, __LINE__, line.c_str());
 #endif
 					/*

@@ -146,7 +146,7 @@ std::unique_ptr<aff4::rdf::RDFValue> Model::getValueFromRaptorTerm(aff4::Lexicon
 					break;
 				}
 			} catch (...) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf( aff4::getDebugOutput(), "%s[%d] : RDFValue construction failed? %d : %s\n", __FILE__, __LINE__, type,
 						value_string.c_str());
 #endif
@@ -176,7 +176,7 @@ void Model::statementHandler(raptor_statement* statement) {
 			// Get the value.
 			std::unique_ptr<RDFValue> v = getValueFromRaptorTerm(property, statement->object);
 			if (v != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				raptor_statement_print_as_ntriples(statement, aff4::getDebugOutput());
 				fprintf(aff4::getDebugOutput(), "\n%s[%d] :%s : %s : %s\n", __FILE__, __LINE__, subjectURN.c_str(),
 						propertryURN.c_str(), v->toString().c_str());

@@ -45,7 +45,7 @@ ZipEntry::ZipEntry(const std::string& segmentName, uint64_t headerOffset, uint64
 		uint64_t compressedLength, int compressionMethod) :
 		segmentName(segmentName), headerOffset(headerOffset), offset(offset), length(length), compressedLength(
 				compressedLength), compressionMethod(compressionMethod) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : ZipEntry : %s %" PRIu64 " : %" PRIu64 "\n", __FILE__, __LINE__, segmentName.c_str(),
 			offset, compressedLength);
 #endif
@@ -65,7 +65,7 @@ Zip::Zip(const std::string& filename) :
 	fileHandle = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
 	if (fileHandle == -1) {
 		// we failed, so return nothing. (error will be in errno).
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Unable to open Zip : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 		return;
@@ -81,7 +81,7 @@ Zip::Zip(const std::string& filename) :
 	std::wstring wpath = aff4::util::s2ws(filename);
 	fileHandle = CreateFile(wpath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS, NULL);
 	if (fileHandle == INVALID_HANDLE_VALUE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to open Zip : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 		return;
@@ -90,7 +90,7 @@ Zip::Zip(const std::string& filename) :
 	LARGE_INTEGER plength;
 	plength.QuadPart = 0;
 	if (!GetFileSizeEx(fileHandle, &plength)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to get File Length of Zip : %s \n", __FILE__, __LINE__, filename.c_str());
 #endif
 		return;
@@ -99,7 +99,7 @@ Zip::Zip(const std::string& filename) :
 	
 #endif
 	closed = false;
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Zip : %s : %" PRIu64 "\n", __FILE__, __LINE__, filename.c_str(), length);
 #endif
 	parseCD();
@@ -139,7 +139,7 @@ std::vector<std::shared_ptr<ZipEntry>> Zip::getEntries() const noexcept {
 }
 
 bool Zip::hasEntry(const std::string& segmentName) const noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Has Entry: %s \n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 	// Find the Zip Entry.
@@ -152,7 +152,7 @@ bool Zip::hasEntry(const std::string& segmentName) const noexcept {
 }
 
 std::shared_ptr<IAFF4Stream> Zip::getStream(const std::string& segmentName) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Zip Open Segment: %s \n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 	// Find the Zip Entry.
@@ -160,7 +160,7 @@ std::shared_ptr<IAFF4Stream> Zip::getStream(const std::string& segmentName) noex
 		if (entry->getSegmentName().compare(segmentName) == 0) {
 			std::shared_ptr<aff4::stream::ZipSegmentStream> stream = std::make_shared<aff4::stream::ZipSegmentStream>(
 					entry->getSegmentName(), entry, this);
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Zip Open Segment: %s Found: %" PRIu64 " : %" PRIu64 "\n", __FILE__, __LINE__,
 					segmentName.c_str(), entry->getHeaderOffset(), entry->getCompressedLength());
 #endif
@@ -168,7 +168,7 @@ std::shared_ptr<IAFF4Stream> Zip::getStream(const std::string& segmentName) noex
 		}
 	}
 	// Unknown?
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Zip Open Segment: %s is UNKNOWN?\n", __FILE__, __LINE__, segmentName.c_str());
 #endif
 	std::shared_ptr<IAFF4Stream> s = nullptr;
@@ -201,7 +201,7 @@ void Zip::parseCD() noexcept {
 	}
 	// Not found.
 	if (le32toh(endCD->magic) != 0x6054b50) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Zip EOCD Not Found: %s\n", __FILE__, __LINE__, filename.c_str());
 #endif
 		return;
@@ -222,7 +222,7 @@ void Zip::parseCD() noexcept {
 			std::string rComment(commentBuffer.get(), l);
 			
 			this->comment = rComment;
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Zip Comment: %s\n", __FILE__, __LINE__, rComment.c_str());
 #endif
 		}
@@ -271,7 +271,7 @@ void Zip::parseCD() noexcept {
 
 	// Now iterate over all entries in the CD...
 	uint64_t entryOffset = directoryOffset;
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Zip directoryNumberOfEntries: %" PRIu64 "\n", __FILE__, __LINE__, directoryNumberOfEntries);
 #endif
 	for (uint64_t i = 0; i < directoryNumberOfEntries; i++) {
@@ -353,7 +353,7 @@ void Zip::parseCD() noexcept {
 }
 
 int64_t Zip::fileRead(void *buf, uint64_t count, uint64_t offset) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 	if ((count == 0) || (buf == nullptr)) {
@@ -391,12 +391,12 @@ int64_t Zip::fileRead(void *buf, uint64_t count, uint64_t offset) noexcept {
 	readDetails.OffsetHigh = (DWORD)((offset & 0xffffffff00000000L) >> 32);
 
 	if (!ReadFile(fileHandle, buf, byteRead, &bytesRead, &readDetails)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading %" PRIx64 " : %" PRIx64 " FAILED \n", __FILE__, __LINE__, offset, count);
 #endif
 		return -1;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read %" PRIx64 " : %" PRIx64 " => %" PRIx32 " \n", __FILE__, __LINE__, offset, count, byteRead);
 #endif
 	return byteRead;

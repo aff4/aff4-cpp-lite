@@ -101,7 +101,7 @@ std::vector<aff4::rdf::RDFValue> ZipSegmentStream::getProperty(aff4::Lexicon res
  */
 
 int64_t ZipSegmentStream::readCompressed(void *buf, uint64_t count, uint64_t offset) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Reading Compressed Zip Segment %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 	// If the size of the stream is less than 32MB, take a poor mans implementation.
@@ -139,7 +139,7 @@ int64_t ZipSegmentStream::readCompressed(void *buf, uint64_t count, uint64_t off
 
 	} else {
 		// greater than 32MB
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading Compressed Zip Segment TOO LARGE %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 		// FIXME: IMPLEMENT.

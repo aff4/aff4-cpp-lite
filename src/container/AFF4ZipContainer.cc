@@ -22,7 +22,7 @@ namespace container {
 
 AFF4ZipContainer::AFF4ZipContainer(const std::string& resource, std::unique_ptr<aff4::zip::Zip> parent) :
 		AFF4Resource(resource), parent(std::move(parent)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : New AFF4 Zip Container: %s : %s \n", __FILE__, __LINE__,
 			this->parent->getFilename().c_str(), resource.c_str());
 #endif
@@ -79,19 +79,19 @@ void AFF4ZipContainer::loadVersionInformation() noexcept {
 			if (!line.empty()) {
 				if (aff4::util::hasPrefix(line, MAJOR)) {
 					addProperty(aff4::Lexicon::AFF4_MAJOR_VERSION, aff4::rdf::RDFValue(line.substr(MAJOR.size())));
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf( aff4::getDebugOutput(), "%s[%d] : Major Version : %s\n", __FILE__, __LINE__,
 							line.substr(MAJOR.size()).c_str());
 #endif
 				} else if (aff4::util::hasPrefix(line, MINOR)) {
 					addProperty(aff4::Lexicon::AFF4_MINOR_VERSION, aff4::rdf::RDFValue(line.substr(MINOR.size())));
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf( aff4::getDebugOutput(), "%s[%d] : Minor Version : %s\n", __FILE__, __LINE__,
 							line.substr(MINOR.size()).c_str());
 #endif
 				} else if (aff4::util::hasPrefix(line, TOOL)) {
 					addProperty(aff4::Lexicon::AFF4_TOOL, aff4::rdf::RDFValue(line.substr(TOOL.size())));
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf( aff4::getDebugOutput(), "%s[%d] : Tool Version : %s\n", __FILE__, __LINE__,
 							line.substr(TOOL.size()).c_str());
 #endif
@@ -100,7 +100,7 @@ void AFF4ZipContainer::loadVersionInformation() noexcept {
 			}
 		}
 	} else {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : version.txt file is missing from container? : %s\n", __FILE__, __LINE__,
 				parent->getFilename().c_str());
 #endif
@@ -147,7 +147,7 @@ int64_t AFF4ZipContainer::fileRead(void *buf, uint64_t count, uint64_t offset) n
 }
 
 std::shared_ptr<IAFF4Stream> AFF4ZipContainer::getImageStream(const std::string& resource) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : aff4:ImageStream : %s \n", __FILE__, __LINE__, resource.c_str());
 #endif
 	// No stream resource
@@ -207,7 +207,7 @@ std::shared_ptr<IAFF4Stream> AFF4ZipContainer::getImageStream(const std::string&
 
 std::string AFF4ZipContainer::sanitizeResource(const std::string& resource) noexcept {
 	std::string res = resource;
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : sanitize Resource: %s\n", __FILE__, __LINE__, res.c_str());
 #endif
 
@@ -224,7 +224,7 @@ std::string AFF4ZipContainer::sanitizeResource(const std::string& resource) noex
 	while (aff4::util::hasPrefix(res, "/")) {
 		res = res.substr(1);
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : sanitized Resource: %s\n", __FILE__, __LINE__, res.c_str());
 #endif
 	return res;
@@ -283,7 +283,7 @@ void AFF4ZipContainer::close() noexcept {
  * From IAFF4Resolver
  */
 std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& resource) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : open %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	if (resource.empty()) {
@@ -293,7 +293,7 @@ std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& r
 	// See if the request is for an aff4::image in us.
 	std::shared_ptr<aff4::IAFF4Image> image = getImage(resource);
 	if (image != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Found Resource %s = %s\n", __FILE__, __LINE__, resource.c_str(),
 				aff4::lexicon::getLexiconString(image->getBaseType()).c_str());
 #endif
@@ -303,7 +303,7 @@ std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& r
 	// See if the request is for a aff4::map in us.
 	std::shared_ptr<aff4::IAFF4Map> map = getMap(resource);
 	if (map != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Found Resource %s = %s\n", __FILE__, __LINE__, resource.c_str(),
 				aff4::lexicon::getLexiconString(map->getBaseType()).c_str());
 #endif
@@ -313,7 +313,7 @@ std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& r
 	// See if the request is for a aff4::map in us.
 	std::shared_ptr<aff4::IAFF4Stream> stream = getImageStream(resource);
 	if (stream != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Found Resource %s = %s\n", __FILE__, __LINE__, resource.c_str(),
 				aff4::lexicon::getLexiconString(stream->getBaseType()).c_str());
 #endif
@@ -323,7 +323,7 @@ std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& r
 	// See if a zip segment.
 	stream = getSegment(resource);
 	if (stream != nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf( aff4::getDebugOutput(), "%s[%d] : Found Resource %s = %s\n", __FILE__, __LINE__, resource.c_str(),
 				aff4::lexicon::getLexiconString(stream->getBaseType()).c_str());
 #endif
@@ -334,14 +334,14 @@ std::shared_ptr<aff4::IAFF4Resource> AFF4ZipContainer::open(const std::string& r
 }
 
 bool AFF4ZipContainer::hasResource(const std::string& resource) noexcept {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : hasResource %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	std::shared_ptr<aff4::IAFF4Resource> res = open(resource);
 	if (res == nullptr) {
 		return false;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Found Resource %s = %s\n", __FILE__, __LINE__, resource.c_str(),
 			aff4::lexicon::getLexiconString(res->getBaseType()).c_str());
 #endif

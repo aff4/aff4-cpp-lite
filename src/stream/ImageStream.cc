@@ -26,7 +26,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 		AFF4Resource(resource), parent(parent), closed(false), length(0), chunkSize(AFF4_DEFAULT_CHUNK_SIZE), chunksInSegment(
 		AFF4_DEFAULT_CHUNKS_PER_SEGMENT) {
 
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Create Image Stream  %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 
@@ -53,7 +53,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 			length = values[0].getInteger();
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Length %" PRIu64 " (%" PRIx64 ") \n", __FILE__, __LINE__, length, length);
 #endif
 	// Get the chunksize
@@ -71,7 +71,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 			}
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : ChunkSize  %" PRIu32 " (%" PRIx32 ")\n", __FILE__, __LINE__, chunkSize, chunkSize);
 #endif
 	// Get the chunksInSegments value.
@@ -89,7 +89,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 			}
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : ChunksInSegment  %" PRIu32 " (%" PRIx32 ") \n", __FILE__, __LINE__, chunksInSegment, chunksInSegment);
 #endif
 	// Get the compression algorithm
@@ -112,7 +112,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 		close();
 		return;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Compression  %s \n", __FILE__, __LINE__, codec->getResourceID().c_str());
 #endif
 
@@ -140,7 +140,7 @@ ImageStream::ImageStream(const std::string& resource, aff4::container::AFF4ZipCo
 
 	// determine cache size;
 	uint64_t cacheSize = aff4::stream::getImageStreamCacheSize() / chunkSize;
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Number of Chunk Cache Entries %" PRIu64 " \n", __FILE__, __LINE__, cacheSize);
 #endif
 	chunkCache = std::make_shared<aff4::util::cache<uint64_t, cacheBuffer_t>>(cacheSize, chunkLoaderFunction);
@@ -156,7 +156,7 @@ uint64_t ImageStream::size() noexcept {
 
 void ImageStream::close() noexcept {
 	if (!closed.exchange(true)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Close aff4:ImageStream %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 		parent = nullptr;
@@ -175,7 +175,7 @@ inline uint64_t floor(uint64_t offset, uint64_t size) {
 
 int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	if (closed) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 " on Closed Stream \n", __FILE__, __LINE__, offset, count);
 #endif
 		errno = EPERM;
@@ -183,7 +183,7 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 	}
 	// If offset beyond end, return.
 	if (offset > size()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIu64 " : %" PRIu64 "? Offset Greater than Stream size \n", __FILE__, __LINE__, offset, count);
 #endif
 		return 0;
@@ -193,7 +193,7 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		count -= ((offset + count) - size());
 	}
 
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 
@@ -210,7 +210,7 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		cacheBuffer_t entry = chunkCache->get(chunkOffset);
 		if (entry.second == 0) {
 			// failed to read.
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " FAILED READ \n", __FILE__, __LINE__, offset, count, chunkOffset);
 #endif
 			return -1;
@@ -225,7 +225,7 @@ int64_t ImageStream::read(void *buf, uint64_t count, uint64_t offset) noexcept {
 		leftToRead -= toCopy;
 		buffer += toCopy;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset - actualRead, count, actualRead);
 #endif
 	return actualRead;

@@ -61,7 +61,7 @@ static std::shared_ptr<std::map<int, container_t>> handles = std::make_shared<st
 /**
  * Debug logging options
  */
-#if DEBUG
+#if DEBUG_VERBOSE
 FILE* loggerHandle = nullptr;
 
 std::wstring randomString(std::wstring::size_type length)
@@ -112,7 +112,7 @@ static void closeLog() {
 	if (loggerHandle == nullptr) {
 		return;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Close Log File \n", __FILE__, __LINE__);
 #endif
 	aff4::setDebugOutput(stderr);
@@ -141,18 +141,18 @@ extern "C" {
 		std::lock_guard<std::mutex> lock(apiLock);
 		mainWnd = (HWND)hMainWnd;
 
-#if DEBUG
+#if DEBUG_VERBOSE
 		setupLog();
 #endif
 
 		if (lpFilePath == NULL) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : No Filename provided? \n", __FILE__, __LINE__);
 #endif
 			return NULL;
 		}
 		if (pImgInfo == NULL) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : No Image Information Packet provided? \n", __FILE__, __LINE__);
 #endif
 			return NULL;
@@ -171,24 +171,24 @@ extern "C" {
 		std::wstring wfile(lpFilePath);
 		if (wfile.empty()) {
 			errno = ENOENT;
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Filename provided is empty? \n", __FILE__, __LINE__);
 #endif
 			return NULL;
 		}
 		// Convert wstring (utf-16) to string (utf-8)
 		std::string file = ws2s(wfile);
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Attempt to open: %s \n", __FILE__, __LINE__, file.c_str());
 #endif
 		// Attempt to open the file.
 		std::shared_ptr<aff4::IAFF4Container> container = aff4::container::openAFF4Container(file);
 		if (container == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : No AFF4 Container materialised? %s \n", __FILE__, __LINE__, file.c_str());
 #endif
 			if (!aff4::container::isAFF4Container(file)) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Filename does not appear to be an AFF4 Container? %s \n", __FILE__, __LINE__, file.c_str());
 #endif
 				errno = ENOENT;
@@ -197,13 +197,13 @@ extern "C" {
 			std::string resource = aff4::container::getResourceID(file);
 			pImgInfo->nFlags = IIO_INIT_ERROR_GIVE_UP;
 			if (resource.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid AFF4 Container - Missing Resource Identifier? %s \n", __FILE__, __LINE__, file.c_str());
 #endif
 				pImgInfo->lpTextualDescr = createText(L"Invalid AFF4 Container - Missing Resource Identifier");
 			} else {
 				// Have a Resource ID? Possible empty container.
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Invalid AFF4 Container - Missing Contents? %s \n", __FILE__, __LINE__, file.c_str());
 #endif
 				pImgInfo->lpTextualDescr = createText(L"Invalid AFF4 Container - Missing Contents");
@@ -215,7 +215,7 @@ extern "C" {
 		// Attempt to start a resolver
 		std::shared_ptr<aff4::IAFF4Resolver> resolver(aff4::container::createResolver(file, false));
 		if (resolver == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Unable to construct Resolver at location. \n", __FILE__, __LINE__);
 #endif
 			errno = ENOENT;
@@ -228,7 +228,7 @@ extern "C" {
 		// Open the first image.
 		std::vector<std::shared_ptr<aff4::IAFF4Image>> images = container->getImages();
 		if (images.empty()) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : No Images contained or available in the AFF4 Container.\n", __FILE__, __LINE__);
 #endif
 			errno = ENOENT;
@@ -237,7 +237,7 @@ extern "C" {
 			return (PVOID)(nextHandle++);
 		}
 		if (images[0] == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : No Images contained or available in the AFF4 Container.\n", __FILE__, __LINE__);
 #endif
 			errno = ENOENT;
@@ -248,7 +248,7 @@ extern "C" {
 		// Get the map for the first image.
 		std::shared_ptr<aff4::IAFF4Map> map = images[0]->getMap();
 		if (map == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Primary Image is missing required Datastream Map.\n", __FILE__, __LINE__);
 #endif
 			errno = ENOENT;
@@ -258,7 +258,7 @@ extern "C" {
 		}
 		std::shared_ptr<aff4::IAFF4Stream> stream = map->getStream();
 		if (stream == nullptr) {
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Datastream for Image is not available or corrupted.\n", __FILE__, __LINE__);
 #endif
 			errno = ENOENT;
@@ -269,7 +269,7 @@ extern "C" {
 		container_t handleEntry = std::make_tuple(resolver, container, stream);
 		int handle = nextHandle++;
 		(*handles)[handle] = handleEntry;
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Created aff4:Image instance. Handle %d\n", __FILE__, __LINE__, handle);
 #endif
 		/*
@@ -283,14 +283,14 @@ extern "C" {
 		if (!properties.empty()) {
 			for (aff4::rdf::RDFValue v : properties) {
 				if (v.getType() == aff4::Lexicon::AFF4_DISK_IMAGE_TYPE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : Setting Disk Image\n", __FILE__, __LINE__);
 #endif
 					pImgInfo->nFlags |= IIO_INIT_DISK;
 					break;
 				}
 				if (v.getType() == aff4::Lexicon::AFF4_VOLUME_IMAGE_TYPE) {
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : Setting Volume Image\n", __FILE__, __LINE__);
 #endif
 					pImgInfo->nFlags |= IIO_INIT_VOLUME;
@@ -308,7 +308,7 @@ extern "C" {
 						|| v.getType() == aff4::Lexicon::BBT_APFS_CONTAINER_TYPE_STANDARD) {
 						// Big assumption that these all represent a volume... 
 						// I'm sure someone will file a bug report if this is incorrect.
-#if DEBUG
+#if DEBUG_VERBOSE
 						fprintf(aff4::getDebugOutput(), "%s[%d] : Setting Volume Image (bbt:Std/T2/Fusion)\n", __FILE__, __LINE__);
 #endif
 						pImgInfo->nFlags |= IIO_INIT_VOLUME;
@@ -329,7 +329,7 @@ extern "C" {
 				pImgInfo->nSectorSize = (DWORD)v.getLong();
 			}
 		}
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Setting Sector Size %d\n", __FILE__, __LINE__, pImgInfo->nSectorSize);
 #endif
 
@@ -348,7 +348,7 @@ extern "C" {
 			// No defined sector size, so get the size of the stream and divide by block size.
 			pImgInfo->nSectorCount = (INT64)stream->size() / (INT64)pImgInfo->nSectorSize;
 		}
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Setting Sector Count %" PRIi64 "\n", __FILE__, __LINE__, pImgInfo->nSectorCount);
 #endif
 		/*
@@ -390,7 +390,7 @@ extern "C" {
 				container = it->second;
 			}
 			else {
-#if DEBUG
+#if DEBUG_VERBOSE
 				fprintf(aff4::getDebugOutput(), "%s[%d] : Unknown Handle %d\n", __FILE__, __LINE__, handle);
 #endif
 				errno = ENOENT;
@@ -403,7 +403,7 @@ extern "C" {
 		}
 		std::shared_ptr<aff4::IAFF4Stream> stream = std::get<2>(container);
 
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : (%d) Read : %" PRIx64 ":%" PRIx64 "\n", __FILE__, __LINE__, handle, nOfs, nSize);
 #endif
 
@@ -427,7 +427,7 @@ extern "C" {
 				if (isSparse(stream, nOfs, nSize)) {
 					// Only set the bit as required leaving the contents as is.
 					*pFlags |= IIO_SPARSE_DETECTED;
-#if DEBUG
+#if DEBUG_VERBOSE
 					fprintf(aff4::getDebugOutput(), "%s[%d] : (%d) Returning Sparse Region %" PRIx64 ":%" PRIx64 "\n", __FILE__, __LINE__, handle, nOfs, nSize);
 #endif
 					return nSize;
@@ -445,7 +445,7 @@ extern "C" {
 		if (read < 0) {
 			read = 0;
 		}
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : (%d) Read complete: %" PRIx64 ":%" PRIx64 " => %" PRIx64 "\n", __FILE__, __LINE__, handle, nOfs, nSize, read);
 #endif
 		return read;
@@ -461,7 +461,7 @@ extern "C" {
 	) {
 		std::lock_guard<std::mutex> lock(apiLock);
 		INT handle = (INT)lpImage;
-#if DEBUG
+#if DEBUG_VERBOSE
 		fprintf(aff4::getDebugOutput(), "%s[%d] : Close Handle %d\n", __FILE__, __LINE__, handle);
 #endif
 		auto it = handles->find(handle);
@@ -472,7 +472,7 @@ extern "C" {
 			// And remove the map entry.
 			handles->erase(it);
 		}
-#if DEBUG
+#if DEBUG_VERBOSE
 		else {
 			fprintf(aff4::getDebugOutput(), "%s[%d] : Unknown Handle %d\n", __FILE__, __LINE__, handle);
 		}
@@ -481,7 +481,7 @@ extern "C" {
 			::free(lpTextualDescr);
 		}
 
-#if DEBUG
+#if DEBUG_VERBOSE
 		if (handles->empty()) {
 			closeLog();
 		}

@@ -20,42 +20,42 @@ namespace aff4 {
 namespace stream {
 
 std::shared_ptr<IAFF4Stream> createZeroStream() {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Zero stream \n", __FILE__, __LINE__);
 #endif
 	return std::make_shared<SymbolicImageStream>(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_ZERO), (uint8_t) 0);
 }
 
 std::shared_ptr<IAFF4Stream> createUnknownStream() {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Unknown stream \n", __FILE__, __LINE__);
 #endif
 	return std::make_shared<RepeatedImageStream>(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_UNKNOWN), "UNKNOWN");
 }
 
 std::shared_ptr<IAFF4Stream> createUnknownStream(const std::string& resource) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Unknown stream with Resource %s \n", __FILE__, __LINE__, resource.c_str());
 #endif
 	return std::make_shared<RepeatedImageStream>(resource, "UNKNOWN");
 }
 
 std::shared_ptr<IAFF4Stream> createUnreadableStream() {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Unreadable stream \n", __FILE__, __LINE__);
 #endif
 	return std::make_shared<RepeatedImageStream>(aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_UNREADABLE), "UNREADABLEDATA");
 }
 
 std::shared_ptr<IAFF4Stream> createSymbolicStream(const std::string& resource) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Symbolic stream %s \n", __FILE__, __LINE__, resource.c_str());
 #endif
 	return std::make_shared<SymbolicImageStream>(resource);
 }
 
 std::shared_ptr<IAFF4Stream> createSymbolicStream(uint8_t symbol) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create aff4:Symbolic stream %02X \n", __FILE__, __LINE__, symbol);
 #endif
 	std::string resource = aff4::lexicon::getLexiconString(aff4::Lexicon::AFF4_IMAGESTREAM_SYMBOLIC_PREFIX);

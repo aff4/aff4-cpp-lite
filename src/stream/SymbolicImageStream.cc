@@ -39,7 +39,7 @@ SymbolicImageStream::SymbolicImageStream(const std::string& resource) :
 			symbol = std::stoi(value, nullptr, 16);
 		} catch (...) {
 			// ignore.
-#if DEBUG
+#if DEBUG_VERBOSE
 			fprintf( aff4::getDebugOutput(), "%s[%d] : Unable to determine symbol for symbolic stream : %s\n", __FILE__, __LINE__,
 					resource.c_str());
 #endif
@@ -76,11 +76,11 @@ int64_t SymbolicImageStream::read(void *buf, uint64_t count, uint64_t offset) no
 	if ((count == 0) || (buf == nullptr)) {
 		return 0;
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 	::memset(buf, symbol, count);
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset, count, count);
 #endif
 	return count;

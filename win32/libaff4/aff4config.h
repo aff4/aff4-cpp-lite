@@ -36,13 +36,13 @@ along with AFF4 CPP.  If not, see <http://www.gnu.org/licenses/>.
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
-#ifdef _DEBUG
-	#ifndef DEBUG
-		#define DEBUG 1
+#if defined(_DEBUG) && !defined(REDUCE_VERBOSE)
+	#ifndef DEBUG_VERBOSE
+		#define DEBUG_VERBOSE 1
 	#endif
 #else
-	#ifndef DEBUG
-		#define DEBUG 0
+	#ifndef DEBUG_VERBOSE
+		#define DEBUG_VERBOSE 0
 	#endif
 #endif
 

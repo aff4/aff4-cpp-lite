@@ -117,7 +117,7 @@ std::string getLexiconString(aff4::Lexicon lexicon) noexcept {
 
 aff4::Lexicon getLexicon(const std::string& lexicon) noexcept {
 	if (lexicon.length() == 0) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Unknown lexicon? %s\n", __FILE__, __LINE__, lexicon.c_str());
 #endif
 		return Lexicon::UNKNOWN;
@@ -127,7 +127,7 @@ aff4::Lexicon getLexicon(const std::string& lexicon) noexcept {
 			return it->first;
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : Unknown lexicon? %s\n",  __FILE__, __LINE__,lexicon.c_str());
 #endif
 	return Lexicon::UNKNOWN;

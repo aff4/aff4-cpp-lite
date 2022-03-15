@@ -75,7 +75,7 @@ int64_t RepeatedImageStream::read(void *buf, uint64_t count, uint64_t offset) no
 		return 0;
 	}
 	uint64_t remaining = count;
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Reading  %" PRIx64 " : %" PRIx64 " \n", __FILE__, __LINE__, offset, count);
 #endif
 
@@ -93,7 +93,7 @@ int64_t RepeatedImageStream::read(void *buf, uint64_t count, uint64_t offset) no
 		// calculate next read/copy size.
 		limit = std::min(remainder, (uint64_t)UNITS_M);
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Completed Read  %" PRIx64 " : %" PRIx64 " => %" PRIx64 " \n", __FILE__, __LINE__, offset, count, remaining);
 #endif
 	return remaining;

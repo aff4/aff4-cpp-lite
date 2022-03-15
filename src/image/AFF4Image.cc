@@ -22,7 +22,7 @@ namespace image {
 
 AFF4Image::AFF4Image(const std::string& resource, aff4::container::AFF4ZipContainer* parent) :
 		AFF4Resource(resource), parent(parent) {
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Create Image? %s\n", __FILE__, __LINE__, resource.c_str());
 #endif
 	std::shared_ptr<aff4::rdf::Model> model = parent->getRDFModel();
@@ -72,7 +72,7 @@ AFF4Image::~AFF4Image() {
 
 std::shared_ptr<aff4::IAFF4Map> AFF4Image::getMap() noexcept {
 	// Find our dependentStream instance.
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf(aff4::getDebugOutput(), "%s[%d] : Open Map for Image. %s\n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 	std::vector<aff4::rdf::RDFValue> values = getProperty(aff4::Lexicon::AFF4_DATASTREAM);
@@ -92,7 +92,7 @@ std::shared_ptr<aff4::IAFF4Map> AFF4Image::getMap() noexcept {
 			}
 		}
 	}
-#if DEBUG
+#if DEBUG_VERBOSE
 	fprintf( aff4::getDebugOutput(), "%s[%d] : No Map Stream found for %s \n", __FILE__, __LINE__, getResourceID().c_str());
 #endif
 	return nullptr;
