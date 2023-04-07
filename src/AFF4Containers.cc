@@ -27,6 +27,18 @@
 #include <Shlwapi.h>
 #endif
 
+#if defined(__APPLE__)
+
+// O_LARGEFILE is always on for macOS and thus not defined.
+#ifndef O_LARGEFILE
+#define O_LARGEFILE 0
+#endif
+
+// The following are equal on macOS
+#define pread64 pread
+
+#endif
+
 #include "AFF4Containers.h"
 #include "Zip.h"
 #include "AFF4ZipContainer.h"
