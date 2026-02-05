@@ -18,6 +18,26 @@ Requirements:
 * openssl (tests/examples only)
 * doxygen (documentation).
 
+Nix Build/Development Environment:
+----------------------------------
+
+A Nix flake is provided so this repository can be used as a reproducible
+base for other projects that depend on libaff4.
+
+```bash
+# Enter a development shell with all build/test/docs dependencies.
+nix develop
+
+# Build libaff4 and run checks.
+nix build
+
+# Run unit tests explicitly.
+nix build .#aff4-cpp-lite --print-build-logs
+```
+
+For users who do not use flakes directly, a compatibility `shell.nix` is also
+included.
+
 General Installation (*nix):
 ----------------------------------
 
