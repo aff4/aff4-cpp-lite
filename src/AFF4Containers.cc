@@ -37,6 +37,12 @@
 
 #define AFF4_RESOURCE_BUFFER_SIZE 4096
 
+// O_LARGEFILE is always on for macOS and thus not defined.
+#ifndef O_LARGEFILE
+#define O_LARGEFILE 0
+#define pread64 pread
+#endif
+
 namespace aff4 {
 	namespace container {
 
@@ -366,4 +372,3 @@ slowPath:
 
 	} /* namespace container */
 } /* namespace aff4 */
-

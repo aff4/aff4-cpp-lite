@@ -51,7 +51,9 @@ AC_CHECK_LIB([snappy], [snappy_compress], [],
 ])
 
 # Optionals for unit testing
+AM_CONDITIONAL([HAVE_CPPUNIT], [false])
 PKG_CHECK_MODULES([CPPUNIT], [cppunit >= 1.13.0], [AM_CONDITIONAL(HAVE_CPPUNIT, true)], [AC_MSG_WARN(Unit Tests disabled - missing cppunit)])
+AM_CONDITIONAL([HAVE_OPENSSL], [false])
 PKG_CHECK_MODULES([SSL], [openssl >= 1.0.2], [AM_CONDITIONAL(HAVE_OPENSSL, true)], [AC_MSG_WARN(Unit Tests disabled - missing OpenSSL)])
 
 AH_VERBATIM([__STDC_FORMAT_MACROS],
