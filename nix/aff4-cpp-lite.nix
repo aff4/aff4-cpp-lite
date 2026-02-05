@@ -28,6 +28,8 @@ stdenv.mkDerivation {
     snappy
   ];
 
+  NIX_CFLAGS_COMPILE = [ "-std=c++11" ];
+
   configureFlags = [ "--disable-debug" ];
 
   doCheck = false;
