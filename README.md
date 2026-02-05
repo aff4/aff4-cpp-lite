@@ -57,6 +57,21 @@ Solution files for Visual Studio 2015 are located in /win32.
 
 See /win32/INSTALL.txt for full details if needing to rebuild dependencies.
 
+Nix (NixOS/Nix flakes):
+-----------------------
+
+Build the library with Nix flakes:
+
+```
+$ nix build
+```
+
+You can also build a package for a specific system:
+
+```
+$ nix build .#packages.x86_64-linux.default
+```
+
 ## Notes:
 
 This source repository includes the following projects
