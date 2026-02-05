@@ -17,11 +17,18 @@
 
       perSystem = { pkgs, ... }:
         let
-          raptor2Pkg = if pkgs ? raptor2 then pkgs.raptor2 else pkgs.librdf;
+          raptor2Pkg = pkgs.lib.attrByPath [ "raptor2" ] null pkgs;
+          librdfPkg = pkgs.lib.attrByPath [ "librdf" ] null pkgs;
+          redlandPkg = pkgs.lib.attrByPath [ "redland" ] null pkgs;
+          selectedRaptor2 =
+            if raptor2Pkg != null then raptor2Pkg
+            else if librdfPkg != null then librdfPkg
+            else if redlandPkg != null then redlandPkg
+            else throw "No raptor2/librdf/redland package available for this system.";
         in
         {
           packages.default = pkgs.callPackage ./nix/aff4-cpp-lite.nix {
-            raptor2 = raptor2Pkg;
+            raptor2 = selectedRaptor2;
           };
         };
     };
