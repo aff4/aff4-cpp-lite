@@ -15,8 +15,14 @@
         "aarch64-darwin"
       ];
 
-      perSystem = { pkgs, ... }: {
-        packages.default = pkgs.callPackage ./nix/aff4-cpp-lite.nix { };
-      };
+      perSystem = { pkgs, ... }:
+        let
+          raptor2Pkg = if pkgs ? raptor2 then pkgs.raptor2 else pkgs.librdf;
+        in
+        {
+          packages.default = pkgs.callPackage ./nix/aff4-cpp-lite.nix {
+            raptor2 = raptor2Pkg;
+          };
+        };
     };
 }
