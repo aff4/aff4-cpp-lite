@@ -138,6 +138,10 @@ void LightResolver::scanForAFF4Volumes(const std::string& path) {
 	* POSIX based systems.
 	*/
 	DIR* dirp = ::opendir(path.c_str());
+	if (dirp == NULL) {
+		// Unreadable (e.g. EACCES); skip it, as the Windows branch does.
+		return;
+	}
 	struct dirent * dp;
 	while ((dp = readdir(dirp)) != NULL) {
 		std::string filename(dp->d_name);
